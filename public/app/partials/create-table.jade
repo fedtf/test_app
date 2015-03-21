@@ -1,0 +1,17 @@
+.for-table
+    table.table-striped.table-bordered.table
+        tr
+            th(rowspan="2") Ученик
+            th(colspan="{{wrightAnswersArray[0].length-1}}") Номер задания
+            th(rowspan="2") Сумма
+            th(rowspan="2") Сумма<sup>2</sup>
+        tr
+            th(ng-repeat="elem in wrightAnswersArray[0]" track $index, ng-if="$index > 0") {{elem[1]}}
+        tr(ng-repeat="student in wrightAnswersArray track by $index")
+            td(ng-click="toggleProblem(problem)", ng-repeat="problem in student track by $index")
+                input.form-control(value="{{problem}}", ng-if="$index == 0")
+                input(ng-if="$index>0" type="checkbox", ng-checked="problem[0] > 0")
+            td(ng-init="arraySum = tableService.rightArray[$index]") {{tableService.rightArray[$index]}}
+            td {{tableService.rightArray[$index]*tableService.rightArray[$index]}}
+
+div {{tableService.rightArray}}
