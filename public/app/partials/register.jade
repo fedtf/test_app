@@ -1,0 +1,17 @@
+form(name="registerForm")
+    .form-group
+        label(for="first-name-input") Имя
+        input.form-control(type="text", id="first-name-input", ng-model="firstName", placeholder="Введите ваше имя", required)
+    .form-group
+        label(for="first-name-input") Фамилия
+        input.form-control(type="text", id="first-name-input", placeholder="Введите вашу фамилию", ng-model="lastName", required)
+    .form-group
+        label(for="first-name-input") Логин
+        input.form-control(type="text", placeholder="Введите логин", id="first-name-input", ng-model="nickName", required)
+    .form-group
+        label(for="first-name-input") Пароль
+        input.form-control(type="password", id="first-name-input", placeholder="Введите пароль", ng-model="password", required)
+    .form-group
+        label(for="first-name-input") Подтверждение пароля
+        input.form-control(type="password", id="first-name-input", placeholder="Повторите пароль", ng-model="secondPassword", required)
+    button.btn.btn-default.btn-lg(ng-disabled="registerForm.$invalid", ng-click="register()") Зарегистрироваться

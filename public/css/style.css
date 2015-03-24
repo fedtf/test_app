@@ -36,3 +36,6 @@
 .icon-down-open {
   bottom: 1%;
 }
+.user-link {
+  text-decoration: underline;
+}

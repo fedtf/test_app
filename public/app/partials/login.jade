@@ -1,0 +1,16 @@
+.navbar-right(ng-controller="loginCtrl")
+    form.navbar-form(ng-hide="userIdentity.isAuthorised()")
+        .form-group
+            input.form-control.marged-right(placeholder="Введите логин", ng-model="username")
+        .form-group
+            input.form-control.marged-right(placeholder="Введите пароль",re ng-model="password", type="password")
+        .btn-group
+            button.btn.btn-default(ng-click="signIn(username, password)") Войти
+            button.btn.btn-default.dropdown-toggle(data-toggle="dropdown", type="button")
+                span.caret
+            ul.dropdown-menu
+                li
+                    a(href="#register") Регистрация
+    p.navbar-text(ng-show="userIdentity.isAuthorised()") Вы вошли как&nbsp
+        a.navbar-link.user-link(ng-href="#users/{{userIdentity.user.nickName}}") {{userIdentity.user.nickName}}&nbsp
+    button.btn.btn-default.navbar-btn(ng-show="userIdentity.isAuthorised()", ng-click="signOut()") Выйти

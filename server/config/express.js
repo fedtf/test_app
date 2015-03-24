@@ -14,7 +14,7 @@ module.exports = function(app, config) {
 
     app.set('views', config.rootDirname + '/server/views');
     app.set('view engine', 'jade');
-
+    app.use(cookieParser());
     app.use(bodyParser());
     app.use(session({secret: 'polly von'}));
     app.use(passport.initialize());

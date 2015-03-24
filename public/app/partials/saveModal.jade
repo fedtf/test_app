@@ -1,0 +1,10 @@
+.modal.fade
+    .modal-dialog
+        .modal-content
+            .modal-body
+                form.form-horizontal(name="saveTable")
+                    .form-group
+                        .input-group-lg.input-group
+                            input.form-control(type="text", id="tableName", ng-model="tableName", placeholder="Введите название таблицы")
+                            span.input-group-btn
+                                button.btn.btn-default(type="button", ng-disabled="saveTable.$invalid", ng-click="saveTable()") Сохранить

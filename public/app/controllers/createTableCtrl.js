@@ -1,9 +1,12 @@
-app.controller('createTableCtrl', function($scope, numbers, tableService) {
+app.controller('createTableCtrl', function($scope, numbers, tableService, ModalService, userIdentity) {
     $scope.numbers = numbers;
 
-    $scope.wrightAnswersArray = tableService.wrightAnswersArray;
+    $scope.createMode = true;
+    $scope.edit = true;
 
-    $scope.toggleProblem = tableService.toggleProblem;
+    $scope.userIdentity = userIdentity;
+
+    $scope.wrightAnswersArray = tableService.wrightAnswersArray;
 
     $scope.tableService = tableService;
 
@@ -13,8 +16,18 @@ app.controller('createTableCtrl', function($scope, numbers, tableService) {
 
     $scope.$watch('wrightAnswersArray', function() {
         tableService.renderRightArray();
-    }, true)
+        tableService.renderDownArray();
+        tableService.renderCorrelationArray();
+        tableService.renderDownCorrelationArray();
+    }, true);
 
-
+    $scope.showSaveModal = function() {
+        ModalService.showModal({
+            templateUrl: '/partials/saveModal',
+            controller: 'saveTableCtrl'
+        }).then(function(modal) {
+            modal.element.modal();
+        })
+    }
 });
 

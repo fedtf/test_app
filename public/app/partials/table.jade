@@ -1,0 +1,73 @@
+h2.main-header(ng-if="!createMode") {{tableName}}
+
+button.btn.btn-default.btn-lg(ng-click="showSaveModal()", ng-show="userIdentity.isAuthorised() && createMode") Сохранить
+button.btn.btn-default(ng-click="toggleEdit()", ng-show="!createMode && !edit") Редактировать
+button.btn.btn-default(ng-hide="!createMode && !edit", ng-click="updateTable()") Сохранить
+
+.for-table
+    table.table-striped.table-bordered.table
+        tr
+            th(rowspan="2") Испытуемые
+            th(colspan="{{wrightAnswersArray[0].length-1}}") Задания
+            th(rowspan="2") Сумма
+            th(rowspan="2") Сумма<sup>2</sup>
+        tr
+            th(ng-repeat="elem in wrightAnswersArray[0]" track $index, ng-if="$index > 0") {{elem[1]}}
+        tr(ng-repeat="student in wrightAnswersArray track by $index")
+            td(ng-click="edit && tableService.toggleProblem(problem)", ng-repeat="problem in student track by $index")
+                input.form-control(value="{{problem}}", ng-if="$index == 0", ng-disabled="!edit")
+                input(ng-if="$index>0" type="checkbox", ng-checked="problem[0] > 0", ng-disabled="!edit")
+            td(ng-init="arraySum = tableService.rightArray[$index]") {{tableService.rightArray[$index]}}
+            td {{tableService.rightArray[$index]*tableService.rightArray[$index]}}
+        tr
+            td Количество решенных
+            td(ng-repeat="elem in tableService.downArray track by $index") {{elem}}
+        tr
+            td Количество нерешенных
+            td(ng-repeat="elem in tableService.downArray track by $index",
+            ng-if="$index<tableService.downArray.length-2") {{wrightAnswersArray.length - elem}}
+            td(rowspan=3, colspan="2")  {{tableService.partSolvedSum}}
+        tr
+            td Доля решенных
+            td(ng-repeat="elem in tableService.downArray track by $index",
+            ng-if="$index<tableService.downArray.length-2") {{(elem/wrightAnswersArray.length).toFixed(2)}}
+        tr
+            td Доля нерешенных
+            td(ng-repeat="elem in tableService.downArray track by $index",
+            ng-if="$index<tableService.downArray.length-2") {{(1-elem/wrightAnswersArray.length).toFixed(2)}}
+        tr
+            td Дисперсия
+            td(ng-repeat="elem in tableService.downArray track by $index",
+            ng-if="$index<tableService.downArray.length-2").
+             {{((elem/wrightAnswersArray.length)*(1-elem/wrightAnswersArray.length)).toFixed(2)}}
+            td(rowspan="2", colspan="2") {{tableService.dispersionSum}}
+        tr
+            td Отклонение
+            td(ng-repeat="elem in tableService.downArray track by $index",
+            ng-if="$index<tableService.downArray.length-2").
+             {{(tableService.sqrt((elem/wrightAnswersArray.length)*(1-elem/wrightAnswersArray.length))).toFixed(2)}}
+
+.for-correlation-table
+    table.table.table-striped.table-bordered
+        tr
+            th №
+            th(ng-repeat="elem in wrightAnswersArray[0] track by $index" ng-if="$index>0") {{elem[1]}}
+            th Общ. балл
+        tr(ng-repeat="arr in tableService.correlationArray track by $index",
+        ng-if="$index < tableService.correlationArray.length-1")
+            th {{wrightAnswersArray[0][$index+1][1]}}
+            td(ng-repeat="elem in arr track by $index") {{elem}}
+        tr
+            th Сумма
+            td(ng-repeat="elem in tableService.downCorrelationArray track by $index") {{elem}}
+        tr
+            th Среднее
+            td(ng-repeat="elem in tableService.downCorrelationArray track by $index").
+             {{(elem/tableService.downCorrelationArray.length).toFixed(3)}}
+        tr
+            th Среднее<sup>2</sup>
+            td(ng-repeat="elem in tableService.downCorrelationArray track by $index").
+             {{(elem/tableService.downCorrelationArray.length*elem/tableService.downCorrelationArray.length).toFixed(4)}}
+
+
+

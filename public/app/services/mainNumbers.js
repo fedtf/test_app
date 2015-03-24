@@ -4,6 +4,7 @@ app.service('numbers', function Numbers($rootScope) {
     self.studentsNumber = 0;
     self.problemsNumber = 0;
 
+
     self.inc = function(value) {
 
         if (value + 1 > 1000) {
