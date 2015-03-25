@@ -1,9 +1,10 @@
-app.controller('tableCtrl', function($scope, $routeParams, $http, tableService, notifier, userIdentity) {
+app.controller('tableCtrl', function($scope, $routeParams, $http, tableService, notifier, userIdentity, tableCheck) {
 
     $http.get('/api/tables/' + $routeParams.tableId).then(function (res) {
 
         $scope.tableName = res.data.tableName;
         $scope.wrightAnswersArray = res.data.wrightAnswersArray;
+        $scope.tableCheck = tableCheck;
 
         tableService.wrightAnswersArray = $scope.wrightAnswersArray;
         $scope.tableService = tableService;
@@ -14,6 +15,7 @@ app.controller('tableCtrl', function($scope, $routeParams, $http, tableService, 
             tableService.renderDownArray();
             tableService.renderCorrelationArray();
             tableService.renderDownCorrelationArray();
+            console.log('changed')
         }, true);
 
     }, function(reason) {

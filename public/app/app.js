@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngResource', 'ngRoute', 'angularModalService']);
+var app = angular.module('app', ['ngResource', 'ngRoute', 'angularModalService', 'angular-loading-bar']);
 
 app.config(function($routeProvider, $locationProvider) {
     $routeProvider

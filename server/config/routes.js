@@ -21,6 +21,8 @@ module.exports = function(app) {
 
     app.get('/api/tables/:id', Table.get);
 
+    app.get('/api/user-tables/:userId', Table.getUserTables);
+
     app.put('/api/tables/:id', Table.update);
 
     app.get('/', function (req, res) {

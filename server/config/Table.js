@@ -42,6 +42,16 @@ exports.get = function(req, res, next) {
 
 };
 
+exports.getUserTables = function(req, res, next) {
+    Table.find({userId:req.params.userId}).exec(function(err, userTables) {
+        if (err) {
+            res.status(500);
+            return res.write('Что-то пошло не так, попробуйте позже');
+        }
+        return res.send(userTables);
+    });
+};
+
 
 exports.update = function(req, res, next) {
 

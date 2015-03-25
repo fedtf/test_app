@@ -1,1 +1,1 @@
-<div class="well">{{user.firstName}}</div><div class="well">{{user.lastName}}</div><div class="well">{{user.tables}}</div>
+<div class="well">{{user.firstName}}</div><div class="well">{{user.lastName}}</div><ul class="list-group"><li ng-repeat="table in userTables" class="list-group-item"><a ng-href="#tables/{{table._id}}">{{table.tableName}}</a></li></ul>

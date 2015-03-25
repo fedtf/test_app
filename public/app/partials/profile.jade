@@ -1,3 +1,5 @@
 .well {{user.firstName}}
 .well {{user.lastName}}
-.well {{user.tables}}
+ul.list-group
+    li.list-group-item(ng-repeat="table in userTables")
+        a(ng-href="#tables/{{table._id}}") {{table.tableName}}

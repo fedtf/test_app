@@ -3,20 +3,24 @@ h2.main-header(ng-if="!createMode") {{tableName}}
 button.btn.btn-default.btn-lg(ng-click="showSaveModal()", ng-show="userIdentity.isAuthorised() && createMode") Сохранить
 button.btn.btn-default(ng-click="toggleEdit()", ng-show="!createMode && !edit") Редактировать
 button.btn.btn-default(ng-hide="!createMode && !edit", ng-click="updateTable()") Сохранить
+button.btn.btn-default(ng-if="!createMode" ng-click="tableCheck.check()") Провести анализ
+
+.well {{tableService.wrightAnswersArray}}
 
 .for-table
     table.table-striped.table-bordered.table
         tr
             th(rowspan="2") Испытуемые
-            th(colspan="{{wrightAnswersArray[0].length-1}}") Задания
+            th(colspan="{{wrightAnswersArray[0].problems.length}}") Задания
             th(rowspan="2") Сумма
             th(rowspan="2") Сумма<sup>2</sup>
         tr
-            th(ng-repeat="elem in wrightAnswersArray[0]" track $index, ng-if="$index > 0") {{elem[1]}}
+            th(ng-repeat="elem in wrightAnswersArray[0].problems" track $index) {{elem[1]}}
         tr(ng-repeat="student in wrightAnswersArray track by $index")
-            td(ng-click="edit && tableService.toggleProblem(problem)", ng-repeat="problem in student track by $index")
-                input.form-control(value="{{problem}}", ng-if="$index == 0", ng-disabled="!edit")
-                input(ng-if="$index>0" type="checkbox", ng-checked="problem[0] > 0", ng-disabled="!edit")
+            td
+                input.form-control(ng-model="student.name")
+            td(ng-click="edit && tableService.toggleProblem(problem)", ng-repeat="problem in student.problems track by $index")
+                input(type="checkbox", ng-checked="problem[0]", ng-disabled="!edit")
             td(ng-init="arraySum = tableService.rightArray[$index]") {{tableService.rightArray[$index]}}
             td {{tableService.rightArray[$index]*tableService.rightArray[$index]}}
         tr
