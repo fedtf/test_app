@@ -1,14 +1,12 @@
-app.controller('tableCtrl', function($scope, $routeParams, $http, tableService, notifier, userIdentity, tableCheck) {
+app.controller('tableCtrl', function($scope, $routeParams, $http, preloadTable, tableService, notifier, userIdentity, tableCheck) {
 
-    $http.get('/api/tables/' + $routeParams.tableId).then(function (res) {
-
-        $scope.tableName = res.data.tableName;
-        $scope.wrightAnswersArray = res.data.wrightAnswersArray;
+        $scope.tableName = preloadTable.name;
+        $scope.wrightAnswersArray = tableService.wrightAnswersArray;
         $scope.tableCheck = tableCheck;
 
-        tableService.wrightAnswersArray = $scope.wrightAnswersArray;
+        console.log(tableService.wrightAnswersArray);
+
         $scope.tableService = tableService;
-        console.log(res);
 
         $scope.$watch('wrightAnswersArray', function() {
             tableService.renderRightArray();
@@ -17,10 +15,6 @@ app.controller('tableCtrl', function($scope, $routeParams, $http, tableService, 
             tableService.renderDownCorrelationArray();
             console.log('changed')
         }, true);
-
-    }, function(reason) {
-        notifier.notifyError(reason)
-    });
 
     $scope.edit = false;
 
@@ -49,6 +43,8 @@ app.controller('tableCtrl', function($scope, $routeParams, $http, tableService, 
         });
 
         $scope.toggleEdit();
-    }
+    };
+
+    $scope.removeElement = tableService.removeElement;
 
 });

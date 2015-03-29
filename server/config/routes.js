@@ -1,5 +1,6 @@
 var auth = require('./auth');
 var Table = require('./Table');
+var utils = require('./utils');
 
 module.exports = function(app) {
 
@@ -23,7 +24,13 @@ module.exports = function(app) {
 
     app.get('/api/user-tables/:userId', Table.getUserTables);
 
+    app.get('/export/:table/:type', utils.exportFile);
+
     app.put('/api/tables/:id', Table.update);
+
+    app.delete('/api/tables/:id', Table.remove);
+
+    app.post('/api/parse-user-file', utils.parseFile);
 
     app.get('/', function (req, res) {
         res.render('index', {

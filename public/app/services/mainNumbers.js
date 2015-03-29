@@ -8,9 +8,9 @@ app.service('numbers', function Numbers($rootScope) {
     self.inc = function(value) {
 
         if (value + 1 > 1000) {
-            return value;
+            return +value;
         } else {
-            return value + 1;
+            return +value + 1;
         }
 
 
@@ -18,9 +18,9 @@ app.service('numbers', function Numbers($rootScope) {
 
     self.dec = function(value) {
         if (value - 1 < 0) {
-            return value
+            return +value
         } else {
-            return value - 1;
+            return +value - 1;
         }
     };
 

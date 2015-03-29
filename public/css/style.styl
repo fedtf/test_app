@@ -1,30 +1,72 @@
+@font-face {
+  font-family:infinity;
+  src: url('fonts/Infinity_Russian_edition.woff');
+}
+*
+  &::selection
+    background-color transparent
+    color #000
 .marged-right
   margin-right 20px
 .marged-top
   margin-top 60px
 .main-header
   text-align center
-  font-size 300%
+  font-size 355%
+  font-family:infinity
+  font-weight:bold
 .main-input
-  font-size 1200%
-  height 100%
-  line-height 100%
+  font-size 900%
+  height auto
+  line-height 120%
   text-align center
   border-radius 10%
+  padding 6%
 .main-label
-  font-size 230%
-  margin-bottom 30px
+  font-size 250%
+  font-family infinity
 .center-text
   text-align center
 .icon-up-open, .icon-down-open
-  position absolute
-  left 45%
+  position relative
   font-size 150%
   cursor pointer
   display block
+  opacity .7
+  &::selection
+    background-color transparent
+    color #000
+  &:hover
+    opacity 1
 .icon-up-open
-  top:37%
+  top 30px
 .icon-down-open
-  bottom 1%
+  bottom 30px
 .user-link
   text-decoration:underline
+table
+  &#main-table
+  &#correlation-table
+    td
+    th
+      text-align center
+      vertical-align middle
+#main-table
+  .check
+    padding 0
+    input
+      height 65%
+      width 50%
+      border-radius 50%
+      -webkit-appearance none
+      border: 1px solid #A8A5A5
+      &:checked
+        background #A8A5A5
+      &:focus
+      &::selection
+        border none
+        outline 0
+#correlation-table
+  td
+  th
+    font-size 120%

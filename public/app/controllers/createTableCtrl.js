@@ -1,5 +1,8 @@
-app.controller('createTableCtrl', function($scope, numbers, tableService, ModalService, userIdentity) {
+app.controller('createTableCtrl', function($scope, numbers, tableService, ModalService, userIdentity, $routeParams, tableCheck) {
     $scope.numbers = numbers;
+
+    $scope.numbers.studentsNumber = +$routeParams.studentsNumber;
+    $scope.numbers.problemsNumber = +$routeParams.problemsNumber;
 
     $scope.createMode = true;
     $scope.edit = true;
@@ -10,9 +13,13 @@ app.controller('createTableCtrl', function($scope, numbers, tableService, ModalS
 
     $scope.tableService = tableService;
 
-    $scope.$watchCollection('numbers', function(val) {
+    $scope.tableCheck = tableCheck;
+
+    $scope.removeElement = tableService.removeElement;
+
+    if (!tableService.wrightAnswersArray.length) {
         tableService.renderArray();
-    });
+    }
 
     $scope.$watch('wrightAnswersArray', function() {
         tableService.renderRightArray();

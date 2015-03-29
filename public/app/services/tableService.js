@@ -4,15 +4,20 @@ app.service('tableService', function(numbers, $rootScope) {
 
     self.toggleProblem = function(problem) {
 
-        problem[0] = !problem[0];
-
+        if (problem[0] == 0) {
+            return problem[0] = 1;
+        } else return problem[0] = 0;
     };
 
     self.wrightAnswersArray = [];
 
     self.renderArray = function() {
 
+        self.wrightAnswersArray.splice(0, numbers.studentsNumber);
+
         for (var i = 0; i < numbers.studentsNumber; i++) {
+
+//            self.wrightAnswersArray[i].problems.splice(0, numbers.problemsNumber);
 
             self.wrightAnswersArray[i] = {};
             self.wrightAnswersArray[i].name = 'student';
@@ -20,7 +25,7 @@ app.service('tableService', function(numbers, $rootScope) {
 
             for (var j = 1; j < numbers.problemsNumber+1; j++) {
 
-                self.wrightAnswersArray[i].problems.push([false, j]);
+                self.wrightAnswersArray[i].problems.push([0, j]);
                 console.log(j);
             }
         }
@@ -77,7 +82,7 @@ app.service('tableService', function(numbers, $rootScope) {
         }
 
         self.downArray.push(sum, sumSquared);
-    }
+    };
 
     self.sqrt = function(val) {
         return Math.sqrt(val);
@@ -92,7 +97,7 @@ app.service('tableService', function(numbers, $rootScope) {
         self.correlationArray = [];
 
         for (var i = 0; i < concatArr.length; i++) {
-            concatArr[i].problems.push([self.rightArray[i], 0]);
+            concatArr[i].problems.push([self.rightArray[i], 'Общий балл']);
         }
 
 
@@ -104,14 +109,14 @@ app.service('tableService', function(numbers, $rootScope) {
 
 
         for (i = 0; i < concatArr[0].problems.length; i++) {
-            self.correlationArray.push([]);
+            self.correlationArray.push([concatArr[0].problems[i][1]]);
             for(var j = 0; j < concatArr[0].problems.length; j++) {
                 for(var k=0; k < concatArr.length; k++) {
                     sp += concatArr[k].problems[i][0]*concatArr[k].problems[j][0];
                 }
-                sp -= (self.downArray[i-1]*self.downArray[j-1]/concatArr.length).toFixed(2);
+                sp -= (self.downArray[i]*self.downArray[j]/concatArr.length).toFixed(2);
 
-                res = ((sp).toFixed(2)/(Math.sqrt(ss_array[i-1]*ss_array[j-1])).toFixed(2)).toFixed(3);
+                res = ((sp).toFixed(2)/(Math.sqrt(ss_array[i]*ss_array[j])).toFixed(2)).toFixed(3);
 
                 if (isNaN(res)) res = 0;
                 self.correlationArray[i].push(+res);
@@ -119,21 +124,69 @@ app.service('tableService', function(numbers, $rootScope) {
             }
         }
 
-        console.log(self.correlationArray);
+        self.correlationArray.sort(function(a, b) {
+            return a[0] - b[0];
+        });
+
+        for (i = 0; i < self.correlationArray.length; i++) {
+            for (j = 1; j < self.correlationArray[i].length-1; j++) {
+                var saveValue = self.correlationArray[i][j];
+                self.correlationArray[i][j] = [saveValue, self.wrightAnswersArray[0].problems[j-1][1]];
+            }
+        };
+
+        for (i = 0; i < self.correlationArray.length; i++) {
+            self.correlationArray[i].sort(function(a, b) {
+                return a[1] - b[1];
+            });
+            for (j = 1; j < self.correlationArray[i].length-1; j++) {
+                self.correlationArray[i][j] = self.correlationArray[i][j][0];
+            }
+        };
+
     };
 
     self.renderDownCorrelationArray = function() {
         self.downCorrelationArray = [];
         var sum = 0;
 
-        for (var i = 0; i < self.correlationArray.length; i++) {
-            for (var j = 0; j < self.correlationArray.length; j++) {
+        for (var i = 1; i < self.correlationArray.length; i++) {
+            for (var j = 1; j < self.correlationArray[i].length-1; j++) {
                 sum += self.correlationArray[j][i];
             }
             self.downCorrelationArray.push(+sum.toFixed(2));
             sum = 0;
         }
 
+    };
+
+    self.removeElement = function(toDelete) {
+        var toDeleteArr = toDelete.match(/((\d+)|(\w+)|[\u0400-\u04FF]+)/g);
+        for (var i = 0; i < toDeleteArr.length; i++) {
+            if (isNaN(toDeleteArr[i])) {
+                removeStudent(toDeleteArr[i]);
+            } else {
+                removeProblem(toDeleteArr[i]);
+            }
+        }
+    };
+
+    function removeProblem(problem) {
+        for (var j = 0; j < self.wrightAnswersArray.length; j++) {
+                for (var k = 0; k < self.wrightAnswersArray[j].problems.length; k++) {
+                    if (self.wrightAnswersArray[j].problems[k][1] == problem) {
+                        self.wrightAnswersArray[j].problems.splice(k, 1);
+                    }
+                }
+            }
+    }
+
+    function removeStudent(student) {
+        for (var i = 0; i < self.wrightAnswersArray.length; i++) {
+            if (self.wrightAnswersArray[i].name.toLowerCase() == student.toLowerCase()) {
+                return self.wrightAnswersArray.splice(i, 1);
+            }
+        }
     }
 
 });

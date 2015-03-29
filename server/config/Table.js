@@ -27,6 +27,17 @@ exports.save = function(req, res, next) {
 
 };
 
+exports.remove = function(req, res, next) {
+    console.log(req);
+    Table.remove({_id:req.params.id}, function(err) {
+        if (err) {
+            return res.send({success: false});
+        } else {
+            return res.send({success: true});
+        }
+    })
+};
+
 exports.get = function(req, res, next) {
 
     Table.findOne({_id:req.params.id}).exec(function(err, table) {

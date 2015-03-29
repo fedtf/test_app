@@ -6,6 +6,8 @@ script(src="vendor/angular-route/angular-route.min.js")
 script(src="vendor/toastr/toastr.min.js")
 script(src="vendor/angular-modal-service/dst/angular-modal-service.min.js")
 script(src="vendor/angular-loading-bar/build/loading-bar.min.js")
+script(src="vendor/ng-file-upload/angular-file-upload.min.js")
+script(src="vendor/jquery.fileDownload/src/Scripts/jquery.fileDownload.js")
 script(src="app/app.js")
 script(src="app/services/mainNumbers.js")
 script(src="app/services/tableService.js")
@@ -20,3 +22,17 @@ script(src="app/controllers/registerCtrl.js")
 script(src="app/controllers/saveTableCtrl.js")
 script(src="app/controllers/tableCtrl.js")
 script(src="app/common/notifier.js")
+script.
+    FileAPI = {
+            //only one of jsPath or jsUrl.
+            jsPath: 'vendor/ng-file-upload/FileAPI.min.js',
+            //jsUrl: 'yourcdn.com/js/FileAPI.min.js',
+
+            //only one of staticPath or flashUrl.
+            staticPath: 'vendor/ng-file-upload/FileAPI.flash.swf',
+            //flashUrl: 'yourcdn.com/js/FileAPI.flash.swf',
+
+            //forceLoad: true, html5: false //to debug flash in HTML5 browsers
+            //noContentTimeout: 10000 (see #528)
+    }
+script(src="vendor/ng-file-upload/angular-file-upload-shim.min.js")

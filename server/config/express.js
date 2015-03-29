@@ -3,7 +3,8 @@ var serveStatic = require('serve-static'),
     session = require('express-session'),
     bodyParser = require('body-parser'),
     passport = require('passport'),
-    stylus = require('stylus');
+    stylus = require('stylus'),
+    multer = require('multer');
 
 
 module.exports = function(app, config) {
@@ -17,6 +18,10 @@ module.exports = function(app, config) {
     app.use(cookieParser());
     app.use(bodyParser());
     app.use(session({secret: 'polly von'}));
+    app.use(multer({
+        dest: config.uploadDir,
+        limits: {fileSize:config.maxUploadSize}
+    }));
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(stylus.middleware({
@@ -25,6 +30,5 @@ module.exports = function(app, config) {
     }));
     app.use(serveStatic(config.rootDirname + '/public'));
 
-    console.log(config.rootDirname + '/public');
 };
 

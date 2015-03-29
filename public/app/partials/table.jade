@@ -1,14 +1,25 @@
-h2.main-header(ng-if="!createMode") {{tableName}}
+h2.main-header(ng-show="!createMode") {{tableName}}
+h2.main-header(ng-hide="!createMode") Основная таблица
 
-button.btn.btn-default.btn-lg(ng-click="showSaveModal()", ng-show="userIdentity.isAuthorised() && createMode") Сохранить
+.btn-group.btn-group-lg.col-xs-10.col-xs-offset-1
+    button.btn.btn-default.col-xs-6(ng-click="showSaveModal()", ng-show="userIdentity.isAuthorised() && createMode") Сохранить
+    button.btn.btn-default.col-xs-6(ng-hide="userIdentity.isAuthorised() && createMode || !createMode", disabled="true") Авторизуйтесь, чтобы сохранить результат
+    button.btn.btn-default.col-xs-6(ng-click="tableCheck.check()") Провести анализ
 button.btn.btn-default(ng-click="toggleEdit()", ng-show="!createMode && !edit") Редактировать
-button.btn.btn-default(ng-hide="!createMode && !edit", ng-click="updateTable()") Сохранить
-button.btn.btn-default(ng-if="!createMode" ng-click="tableCheck.check()") Провести анализ
+button.btn.btn-default(ng-hide="createMode || !edit", ng-click="updateTable()") Сохранить
 
-.well {{tableService.wrightAnswersArray}}
 
-.for-table
-    table.table-striped.table-bordered.table
+//input.form-control.input-lg(type="text", ng-model="toDelete", ng-disabled="!createMode && !edit")
+//button(ng-click="removeElement(toDelete)") Удалить
+
+.for-table.panel.panel-default
+    .panel-heading Ввод результатов тестирования
+    .panel-body.
+        В поля слева введите фамилии студентов. В клетках на пересечении с номерами заданий отметьте верные отвветы.
+        Затем для анализа результатов нажмите на кнопку "Анализ результатов". Для сохранения
+        <span ng-show='userIdentity.isAuthorised()'>- на кнопку "Сохранить"</span>
+        <span ng-hide='userIdentity.isAuthorised()'>aвторизуйтесь под своим профилем</span>.
+    table.table-striped.table-bordered.table(id="main-table")
         tr
             th(rowspan="2") Испытуемые
             th(colspan="{{wrightAnswersArray[0].problems.length}}") Задания
@@ -19,8 +30,8 @@ button.btn.btn-default(ng-if="!createMode" ng-click="tableCheck.check()") Про
         tr(ng-repeat="student in wrightAnswersArray track by $index")
             td
                 input.form-control(ng-model="student.name")
-            td(ng-click="edit && tableService.toggleProblem(problem)", ng-repeat="problem in student.problems track by $index")
-                input(type="checkbox", ng-checked="problem[0]", ng-disabled="!edit")
+            td.check(ng-click="edit && tableService.toggleProblem(problem)", ng-repeat="problem in student.problems track by $index")
+                input(type="checkbox", ng-checked="problem[0]>0", ng-disabled="!edit")
             td(ng-init="arraySum = tableService.rightArray[$index]") {{tableService.rightArray[$index]}}
             td {{tableService.rightArray[$index]*tableService.rightArray[$index]}}
         tr
@@ -51,16 +62,16 @@ button.btn.btn-default(ng-if="!createMode" ng-click="tableCheck.check()") Про
             ng-if="$index<tableService.downArray.length-2").
              {{(tableService.sqrt((elem/wrightAnswersArray.length)*(1-elem/wrightAnswersArray.length))).toFixed(2)}}
 
+h2.main-header Корреляционная таблица
 .for-correlation-table
-    table.table.table-striped.table-bordered
+    table.table.table-striped.table-bordered(id="correlation-table")
         tr
             th №
-            th(ng-repeat="elem in wrightAnswersArray[0] track by $index" ng-if="$index>0") {{elem[1]}}
-            th Общ. балл
-        tr(ng-repeat="arr in tableService.correlationArray track by $index",
-        ng-if="$index < tableService.correlationArray.length-1")
-            th {{wrightAnswersArray[0][$index+1][1]}}
-            td(ng-repeat="elem in arr track by $index") {{elem}}
+            th(ng-repeat="elem in tableService.correlationArray track by $index") {{elem[0]}}
+        tr(ng-repeat="arr in tableService.correlationArray track by $index | orderBy: arr[0]",
+        ng-if="$index<tableService.correlationArray.length-1")
+            th {{arr[0]}}
+            td(ng-repeat="elem in arr track by $index" ng-if="$index>0") {{elem}}
         tr
             th Сумма
             td(ng-repeat="elem in tableService.downCorrelationArray track by $index") {{elem}}

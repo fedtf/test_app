@@ -36,6 +36,17 @@ app.factory('clientAuth', function($http, userIdentity, $q) {
 
             return dfd.promise;
 
+        },
+        checkAuth: function() {
+            var dfd = $q.defer();
+            console.log('ehy');
+            if (userIdentity.isAuthorised()) {
+                dfd.resolve();
+            } else {
+                dfd.reject('not authenticated');
+            }
+            return dfd.promise;
+           }
         }
-    }
+
 });
