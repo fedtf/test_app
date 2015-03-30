@@ -86,5 +86,25 @@ table#correlation-table th {
 }
 #correlation-table td,
 #correlation-table th {
-  font-size: 120%;
+  font-size: 120;
+}
+.main-buttons {
+  margin-bottom: 30px;
+}
+.checkDiv {
+  position: fixed;
+  top: 25%;
+  left: -12%;
+  height: 50%;
+  padding: 23px;
+  background: #fff;
+  opacity: 0.9;
+  border: 1px dotted #ddd;
+  border-top-right-radius: 3px;
+}
+.checkDiv span.glyphicon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
 }

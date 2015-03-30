@@ -2,9 +2,18 @@ app.service('tableCheck', function(tableService) {
 
     var self = this;
 
-    self.wrightAnswersArray = tableService.wrightAnswersArray;
+    /*self.wrightAnswersArray = tableService.wrightAnswersArray;
     self.downArray = tableService.downArray;
-    self.rightArray = tableService.rightArray;
+    self.rightArray = tableService.rightArray;*/
+
+    self.checkResult = {
+        everybodyAnswered: [],
+        nobodyAnswered: [],
+        criticalCommon: [],
+        candidateCommon: [],
+        withOthers: [],
+        guessed: []
+    };
 
     self.check = function() {
 
@@ -12,9 +21,11 @@ app.service('tableCheck', function(tableService) {
             if (tableService.downArray[i] == 0) {
                 console.log(i);
                 console.log(tableService.wrightAnswersArray[0].problems[i][1], 'никто не');
+                self.checkResult.nobodyAnswered.push(tableService.wrightAnswersArray[0].problems[i][1]);
             }
             if (tableService.downArray[i] == tableService.wrightAnswersArray.length) {
                 console.log(tableService.wrightAnswersArray[0].problems[i][1], 'все');
+                self.checkResult.everybodyAnswered.push(tableService.wrightAnswersArray[0].problems[i][1]);
             }
         }
 
@@ -22,8 +33,10 @@ app.service('tableCheck', function(tableService) {
             var arr = tableService.correlationArray[i];
             if (arr[arr.length - 1] <= 0) {
                 console.log(arr[0], '!с общим');
+                self.checkResult.criticalCommon.push(arr[0]);
             } else if (arr[arr.length - 1] <= 0.3) {
                 console.log(arr[0], '?с общим');
+                self.checkResult.candidateCommon.push(arr[0]);
             }
         }
 
@@ -31,6 +44,7 @@ app.service('tableCheck', function(tableService) {
             arr = tableService.downCorrelationArray;
             if (arr[i]/arr.length <= 0.3) {
                 console.log(i+1, '!с другими');
+                self.checkResult.withOthers.push(i+1);
             }
         }
 
@@ -45,8 +59,13 @@ app.service('tableCheck', function(tableService) {
                     console.log(i, j);
                 }
             }
-            if (sum >= 4) {console.log(tableService.wrightAnswersArray[i].name); console.log(sum)}
+            if (sum >= 4) {
+                console.log(tableService.wrightAnswersArray[i].name);
+                console.log(sum);
+                self.checkResult.guessed(tableService.wrightAnswersArray[i].name);
+            }
         }
+        console.log(self.checkResult);
     };
 
     function sortTables() {

@@ -155,8 +155,8 @@ function exportXlsx(req, res, next) {
                 sheet.data[currentRow][currentCol] = problems[j][0];
                 currentCol++;
             }
-            sheet.data[currentRow][currentCol] = '=SUM(' + getCellByIndex(1, currentRow) + ':'+ getCellByIndex(currentCol-1, currentRow) + ')';
-            sheet.data[currentRow][currentCol+1] = '=SUM(' + getCellByIndex(1, currentRow) + ':'+ getCellByIndex(currentCol-1, currentRow) + ')^2';
+            sheet.data[currentRow][currentCol] = '=СУММ(' + getCellByIndex(1, currentRow) + ':'+ getCellByIndex(currentCol-1, currentRow) + ')';
+            sheet.data[currentRow][currentCol+1] = '=СУММ(' + getCellByIndex(1, currentRow) + ':'+ getCellByIndex(currentCol-1, currentRow) + ')^2';
             currentRow++;
         }
 
@@ -176,12 +176,12 @@ function exportXlsx(req, res, next) {
         for (i = 1; i < table.wrightAnswersArray[0].problems.length+1; i++) {
             var interval = getCellByIndex(i, 1) + ':' + getCellByIndex(i, currentRow-1);
 
-            sheet.data[currentRow][i] = '=SUM(' + interval +')';
-            sheet.data[currentRow+1][i] = '=COUNT(' + interval + ')-SUM(' + interval +')';
-            sheet.data[currentRow+2][i] = '=SUM(' + interval +')/COUNT(' + interval + ')';
-            sheet.data[currentRow+3][i] = '=1-SUM(' + interval +')/COUNT(' + interval + ')';
-            sheet.data[currentRow+4][i] = '=(1-SUM(' + interval +')/COUNT(' + interval + '))*SUM(' + interval +')/COUNT(' + interval + ')';
-            sheet.data[currentRow+5][i] = '=SQRT((1-SUM(' + interval +')/COUNT(' + interval + '))*(SUM(' + interval +')/COUNT(' + interval + ')))';
+            sheet.data[currentRow][i] = '=СУММ(' + interval +')';
+            sheet.data[currentRow+1][i] = '=СЧЕТ(' + interval + ')-СУММ(' + interval +')';
+            sheet.data[currentRow+2][i] = '=СУММ(' + interval +')/СЧЕТ(' + interval + ')';
+            sheet.data[currentRow+3][i] = '=1-СУММ(' + interval +')/СЧЕТ(' + interval + ')';
+            sheet.data[currentRow+4][i] = '=(1-СУММ(' + interval +')/СЧЕТ(' + interval + '))*СУММ(' + interval +')/СЧЕТ(' + interval + ')';
+            sheet.data[currentRow+5][i] = '=КОРЕНЬ((1-СУММ(' + interval +')/СЧЕТ(' + interval + '))*(СУММ(' + interval +')/СЧЕТ(' + interval + ')))';
         }
 
         currentRow += 8;
@@ -217,8 +217,8 @@ function exportXlsx(req, res, next) {
 
         for (i = 0; i < table.correlationArray.length-1; i++) {
             interval = getCellByIndex(currentCol, correlationBegin) + ':' + getCellByIndex(currentCol, currentRow-1)
-            sheet.data[currentRow][currentCol] = '=SUM(' + interval + ')';
-            var average = sheet.data[currentRow+1][currentCol] = '=SUM(' + interval + ')/COUNT(' + interval + ')';
+            sheet.data[currentRow][currentCol] = '=СУММ(' + interval + ')';
+            var average = sheet.data[currentRow+1][currentCol] = '=СУММ(' + interval + ')/СЧЕТ(' + interval + ')';
             sheet.data[currentRow+2][currentCol] = average + '^2';
             currentCol++;
         }

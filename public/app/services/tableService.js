@@ -17,10 +17,8 @@ app.service('tableService', function(numbers, $rootScope) {
 
         for (var i = 0; i < numbers.studentsNumber; i++) {
 
-//            self.wrightAnswersArray[i].problems.splice(0, numbers.problemsNumber);
-
             self.wrightAnswersArray[i] = {};
-            self.wrightAnswersArray[i].name = 'student';
+            self.wrightAnswersArray[i].name = '';
             self.wrightAnswersArray[i].problems = [];
 
             for (var j = 1; j < numbers.problemsNumber+1; j++) {
