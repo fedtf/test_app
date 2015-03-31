@@ -12,6 +12,9 @@
 .marged-top {
   margin-top: 60px;
 }
+.page-header {
+  margin-top: 0;
+}
 .main-header {
   text-align: center;
   font-size: 355%;
@@ -65,24 +68,6 @@ table#main-table th,
 table#correlation-table th {
   text-align: center;
   vertical-align: middle;
-}
-#main-table .check {
-  padding: 0;
-}
-#main-table .check input {
-  height: 65%;
-  width: 50%;
-  border-radius: 50%;
-  -webkit-appearance: none;
-  border: 1px solid #a8a5a5;
-}
-#main-table .check input:checked {
-  background: #a8a5a5;
-}
-#main-table .check input:focus,
-#main-table .check input::selection {
-  border: none;
-  outline: 0;
 }
 #main-table th {
   position: relative;
@@ -161,4 +146,10 @@ table#correlation-table th {
   box-shadow: none;
   background: none;
   border: none;
+}
+.save-dropdown {
+  top: 80%;
+}
+.save-dropdown a {
+  cursor: pointer;
 }

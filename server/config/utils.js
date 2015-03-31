@@ -6,6 +6,7 @@ var Table = require('mongoose').model('Table');
 var Docxtemplater = require('docxtemplater');
 var config = require('./config');
 var path = require('path');
+var xlsxParser = require('node-xlsx')
 
 
 exports.parseFile = function(req, res, next) {
@@ -13,7 +14,7 @@ exports.parseFile = function(req, res, next) {
 
     var fileType = req.files.file.mimetype;
 
-    if (fileType == 'text/csv') {
+    if (fileType == 'text/csv' || fileType == 'application/vnd.ms-excel') {
         parseCsvFile(req, res, next);
     } else if (fileType == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
         parseExcelFile(req, res, next);
@@ -39,12 +40,12 @@ function parseExcelFile(req, res, next) {
     var wrightAnswersArray = [];
     var filePath = req.files.file.path;
 
-    excelParse(filePath, function(err, data) {
+    /*excelParse(filePath, function(err, data) {
         if (err) {
             res.status(500);
             res.end('Что-то пошло не так, попробуйте позже');
         }
-
+        console.log(data);
         for (var i = 0; i < data.length; i++) {
             for(var j = 1; j < data[i].length; j++) {
                 data[i][j] = [+data[i][j], j];
@@ -58,7 +59,11 @@ function parseExcelFile(req, res, next) {
 
         fs.unlink(filePath);
 
-    })
+    })*/
+
+    xlsObj = xlsxParser.parse(filePath);
+    console.log(xlsObj);
+    fs.unlink(filePath);
 
 };
 
@@ -126,7 +131,7 @@ function exportDocx(req, res, next) {
     }
 
     tableXml += '<w:tr>';
-    tableXml += getCell('Количество решенных');
+    tableXml += getCell('Количество решивших');
 
     for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
         tableXml += getCell(table.downArray[i])
@@ -136,30 +141,30 @@ function exportDocx(req, res, next) {
     tableXml += '</w:tr>';
 
     tableXml += '<w:tr>';
-    tableXml += getCell('Количество нерешенных');
+    tableXml += getCell('Количество нерешивших');
 
     for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
-        tableXml += getCell(table.wrightAnswersArray[0].problems.length - table.downArray[i]);
+        tableXml += getCell(table.wrightAnswersArray.length - table.downArray[i]);
     }
     tableXml += getCell('');
     tableXml += getCell('');
     tableXml += '</w:tr>';
 
     tableXml += '<w:tr>';
-    tableXml += getCell('Доля решенных');
+    tableXml += getCell('Доля решивших');
 
     for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
-        tableXml += getCell((table.downArray[i]/table.wrightAnswersArray[0].problems.length).toFixed(3));
+        tableXml += getCell((table.downArray[i]/table.wrightAnswersArray.length).toFixed(3));
     }
     tableXml += getCell('');
     tableXml += getCell('');
     tableXml += '</w:tr>';
 
     tableXml += '<w:tr>';
-    tableXml += getCell('Доля нерешенных');
+    tableXml += getCell('Доля нерешивших');
 
     for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
-        tableXml += getCell((1-table.downArray[i]/table.wrightAnswersArray[0].problems.length).toFixed(3))
+        tableXml += getCell((1-table.downArray[i]/table.wrightAnswersArray.length).toFixed(3))
     }
     tableXml += getCell('');
     tableXml += getCell('');
@@ -169,8 +174,8 @@ function exportDocx(req, res, next) {
     tableXml += getCell('Дисперсия');
 
     for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
-        tableXml += getCell(((table.downArray[i]/table.wrightAnswersArray[0].problems.length)
-            *(1-table.downArray[i]/table.wrightAnswersArray[0].problems.length)).toFixed(3));
+        tableXml += getCell(((table.downArray[i]/table.wrightAnswersArray.length)
+            *(1-table.downArray[i]/table.wrightAnswersArray.length)).toFixed(3));
     }
     tableXml += getCell('');
     tableXml += getCell('');
@@ -180,8 +185,8 @@ function exportDocx(req, res, next) {
     tableXml += getCell('Отклонение');
 
     for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
-        tableXml += getCell(Math.sqrt(((table.downArray[i]/table.wrightAnswersArray[0].problems.length)
-            *(1-table.downArray[i]/table.wrightAnswersArray[0].problems.length))).toFixed(3));
+        tableXml += getCell(Math.sqrt(((table.downArray[i]/table.wrightAnswersArray.length)
+            *(1-table.downArray[i]/table.wrightAnswersArray.length))).toFixed(3));
     }
     tableXml += getCell('');
     tableXml += getCell('');

@@ -22,4 +22,4 @@
     .col-xs-10.col-xs-offset-1
         .btn-group.col-xs-12
             a.btn.btn-default.col-xs-6(type="button", ng-href="#create-table/{{numbers.studentsNumber}}/{{numbers.problemsNumber}}", ng-disabled="!(numbers.studentsNumber > 0) || !(numbers.problemsNumber > 0)") Cоздать таблицу
-            button.btn.btn-default.col-xs-6(ng-file-change="upload($files)", ng-file-select="", ng-disabled="!(numbers.studentsNumber > 0) || !(numbers.problemsNumber > 0)") Из файла
+            button.btn.btn-default.col-xs-6(ng-file-change="upload($files)", ng-file-select="") Из файла

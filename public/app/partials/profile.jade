@@ -9,7 +9,7 @@ ul.list-group
             button.btn.btn-danger.marged-right(ng-click="deleteTable(table, $index)") Удалить
             button.btn.btn-default(type="button", data-toggle="dropdown", aria-expanded="false") Сохранить как...
                 span.caret
-            ul.dropdown-menu(role="menu")
+            ul.dropdown-menu.save-dropdown(role="menu")
                 li
                     a(ng-click="exportTable(table, 'xlsx')") Файл MS Excel
                 li
