@@ -13,7 +13,7 @@ app.controller('tableCtrl', function($scope, $routeParams, $http, preloadTable, 
             $scope.ch.showCheckDiv();
         };
 
-        $scope.$watch('wrightAnswersArray.problems', function() {
+        $scope.$watch('wrightAnswersArray', function() {
             tableService.renderRightArray();
             tableService.renderDownArray();
             tableService.renderCorrelationArray();

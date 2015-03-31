@@ -1,13 +1,12 @@
 var csvParse = require('csv-parse');
 var fs = require('fs');
-var excelParse = require('excel');
 var officegen = require('officegen');
 var Table = require('mongoose').model('Table');
 var Docxtemplater = require('docxtemplater');
 var config = require('./config');
 var path = require('path');
-var xlsxParser = require('node-xlsx')
-
+var xlsx = require('node-xlsx');
+var xlsxTemplate = require('xlsx-template');
 
 exports.parseFile = function(req, res, next) {
     console.log(req.files.file.mimetype);
@@ -40,29 +39,20 @@ function parseExcelFile(req, res, next) {
     var wrightAnswersArray = [];
     var filePath = req.files.file.path;
 
-    /*excelParse(filePath, function(err, data) {
-        if (err) {
-            res.status(500);
-            res.end('Что-то пошло не так, попробуйте позже');
-        }
-        console.log(data);
+    var xlsxObj = xlsx.parse(filePath);
+    var data = xlsxObj[0].data;
+
         for (var i = 0; i < data.length; i++) {
             for(var j = 1; j < data[i].length; j++) {
                 data[i][j] = [+data[i][j], j];
+                console.log(data[i][j]);
             }
             wrightAnswersArray.push({name: data[i][0], problems:data[i].splice(1)});
+            console.log({name: data[i][0], problems:data[i]});
         }
 
         res.send({wrightAnswersArray:wrightAnswersArray});
 
-        console.log(wrightAnswersArray);
-
-        fs.unlink(filePath);
-
-    })*/
-
-    xlsObj = xlsxParser.parse(filePath);
-    console.log(xlsObj);
     fs.unlink(filePath);
 
 };
@@ -288,9 +278,42 @@ function exportXlsx(req, res, next) {
 
     var table = JSON.parse(req.params.table);
 
+    var XlsxTemplate = require('xlsx-template');
 
+    // Load an XLSX file into memory
+    fs.readFile(path.join(config.rootDirname, 'templates', '1.xlsx'), function(err, data) {
 
-        var xlsx = officegen('xlsx'),
+        // Create a template
+        var template = new XlsxTemplate(data);
+
+        // Replacements take place on first sheet
+        var sheetNumber = 1;
+
+        // Set up some placeholder values matching the placeholders in the template
+        var values = {
+                extractDate: new Date(),
+                dates: new Date("2013-06-01"),
+                people: [
+                    {name: "John Smith", age: 20},
+                    {name: "Bob Johnson", age: 22}
+                ]
+            };
+
+        // Perform substitution
+        template.substitute(sheetNumber, values);
+
+        // Get binary data
+        var data = template.generate();
+
+        fs.writeFileSync('out.xlsx', data);
+
+        res.download('out.xlsx'); 
+
+        // ...
+
+    });
+
+        /*var xlsx = officegen('xlsx'),
         currentRow = 0,
         currentCol = 1;
 
@@ -420,6 +443,8 @@ function exportXlsx(req, res, next) {
         cell += +row + 1;
 
         return cell;
-    }
+    }*/
+
+
 
 }
