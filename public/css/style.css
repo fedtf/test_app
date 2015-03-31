@@ -84,6 +84,32 @@ table#correlation-table th {
   border: none;
   outline: 0;
 }
+#main-table th {
+  position: relative;
+}
+#main-table th .glyphicon {
+  position: absolute;
+  top: 5%;
+  right: 2%;
+  opacity: 0.2;
+  cursor: pointer;
+}
+#main-table th .glyphicon:hover {
+  opacity: 1;
+}
+#main-table td.name-td {
+  position: relative;
+}
+#main-table td.name-td .glyphicon {
+  position: absolute;
+  top: 23%;
+  right: 11px;
+  opacity: 0.2;
+  cursor: pointer;
+}
+#main-table td.name-td .glyphicon:hover {
+  opacity: 1;
+}
 #correlation-table td,
 #correlation-table th {
   font-size: 120;
@@ -94,12 +120,15 @@ table#correlation-table th {
 .checkDiv {
   position: fixed;
   top: 25%;
-  left: -12%;
-  height: 50%;
+  width: 300px;
+  left: -277px;
+  min-height: 50%;
   padding: 23px;
   background: #fff;
   opacity: 0.9;
   border: 1px dotted #ddd;
+  box-shadow: 0 0 10px;
+  text-align: center;
   border-top-right-radius: 3px;
 }
 .checkDiv span.glyphicon {
@@ -107,4 +136,29 @@ table#correlation-table th {
   top: 5px;
   right: 5px;
   cursor: pointer;
+}
+#toast-container {
+  top: 60px;
+  position: relative;
+}
+.jumbotron h1 {
+  font-family: infinity;
+  font-weight: bold;
+}
+.table-list {
+  line-height: 32px;
+}
+.table-list .profile-table-link {
+  font-size: 18px;
+}
+.before-check {
+  color: #cfcfcf;
+  font-size: 19px;
+  position: absolute;
+  top: 40%;
+}
+.modal-content {
+  box-shadow: none;
+  background: none;
+  border: none;
 }

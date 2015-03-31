@@ -1,9 +1,8 @@
-app.service('numbers', function Numbers($rootScope) {
+app.service('numbers', function Numbers() {
     var self = this;
 
     self.studentsNumber = 0;
     self.problemsNumber = 0;
-
 
     self.inc = function(value) {
 

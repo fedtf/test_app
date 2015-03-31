@@ -15,21 +15,18 @@ app.service('tableService', function(numbers, $rootScope) {
 
         self.wrightAnswersArray.splice(0, numbers.studentsNumber);
 
-        for (var i = 0; i < numbers.studentsNumber; i++) {
+        for (var i = 0; i < +numbers.studentsNumber; i++) {
 
             self.wrightAnswersArray[i] = {};
             self.wrightAnswersArray[i].name = '';
             self.wrightAnswersArray[i].problems = [];
 
-            for (var j = 1; j < numbers.problemsNumber+1; j++) {
+            for (var j = 1; j < +numbers.problemsNumber+1; j++) {
 
                 self.wrightAnswersArray[i].problems.push([0, j]);
-                console.log(j);
+                //console.log(j);
             }
         }
-
-        console.log(self.wrightAnswersArray);
-
     };
 
     self.renderRightArray = function() {
@@ -122,6 +119,8 @@ app.service('tableService', function(numbers, $rootScope) {
             }
         }
 
+        console.log(self.correlationArray);
+
         self.correlationArray.sort(function(a, b) {
             return a[0] - b[0];
         });
@@ -131,16 +130,21 @@ app.service('tableService', function(numbers, $rootScope) {
                 var saveValue = self.correlationArray[i][j];
                 self.correlationArray[i][j] = [saveValue, self.wrightAnswersArray[0].problems[j-1][1]];
             }
+            console.log(self.correlationArray[i]);
         };
 
         for (i = 0; i < self.correlationArray.length; i++) {
             self.correlationArray[i].sort(function(a, b) {
-                return a[1] - b[1];
+                if (!a[1]) return;
+                if (!b[1]) return;
+                return +a[1] - +b[1];
             });
             for (j = 1; j < self.correlationArray[i].length-1; j++) {
                 self.correlationArray[i][j] = self.correlationArray[i][j][0];
             }
         };
+
+
 
     };
 
@@ -159,7 +163,7 @@ app.service('tableService', function(numbers, $rootScope) {
     };
 
     self.removeElement = function(toDelete) {
-        var toDeleteArr = toDelete.match(/((\d+)|(\w+)|[\u0400-\u04FF]+)/g);
+        var toDeleteArr = toDelete.match(/((\W\d+\W)|(\w+)|(.*[\u0400-\u04FF]+.*))/g);
         for (var i = 0; i < toDeleteArr.length; i++) {
             if (isNaN(toDeleteArr[i])) {
                 removeStudent(toDeleteArr[i]);
@@ -186,6 +190,8 @@ app.service('tableService', function(numbers, $rootScope) {
             }
         }
     }
+
+    self.edit = false;
 
 });
 

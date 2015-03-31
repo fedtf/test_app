@@ -8,7 +8,12 @@ app.controller('tableCtrl', function($scope, $routeParams, $http, preloadTable, 
 
         $scope.tableService = tableService;
 
-        $scope.$watch('wrightAnswersArray', function() {
+        $scope.check = function() {
+            tableCheck.check();
+            $scope.ch.showCheckDiv();
+        };
+
+        $scope.$watch('wrightAnswersArray.problems', function() {
             tableService.renderRightArray();
             tableService.renderDownArray();
             tableService.renderCorrelationArray();
@@ -16,7 +21,7 @@ app.controller('tableCtrl', function($scope, $routeParams, $http, preloadTable, 
             console.log('changed')
         }, true);
 
-    $scope.edit = false;
+    $scope.edit = tableService.edit;
 
     $scope.toggleEdit = function() {
         return $scope.edit = !$scope.edit;

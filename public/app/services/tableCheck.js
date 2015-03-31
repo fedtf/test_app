@@ -2,49 +2,58 @@ app.service('tableCheck', function(tableService) {
 
     var self = this;
 
-    /*self.wrightAnswersArray = tableService.wrightAnswersArray;
-    self.downArray = tableService.downArray;
-    self.rightArray = tableService.rightArray;*/
+    self.firstCheck = true;
 
-    self.checkResult = {
-        everybodyAnswered: [],
-        nobodyAnswered: [],
-        criticalCommon: [],
-        candidateCommon: [],
-        withOthers: [],
-        guessed: []
-    };
+    self.checkResult = {};
 
     self.check = function() {
 
-        for (i = 0; i < tableService.downArray.length; i++) {
+        self.firstCheck = false;
+
+        self.checkResult = {
+            everybodyAnswered: [],
+            nobodyAnswered: [],
+            criticalCommon: [],
+            candidateCommon: [],
+            withOthers: [],
+            guessed: []
+        };
+
+        for (i = 0; i < tableService.downArray.length-2; i++) {
             if (tableService.downArray[i] == 0) {
-                console.log(i);
-                console.log(tableService.wrightAnswersArray[0].problems[i][1], 'никто не');
                 self.checkResult.nobodyAnswered.push(tableService.wrightAnswersArray[0].problems[i][1]);
             }
             if (tableService.downArray[i] == tableService.wrightAnswersArray.length) {
-                console.log(tableService.wrightAnswersArray[0].problems[i][1], 'все');
+                console.log(tableService.wrightAnswersArray[0], i);
                 self.checkResult.everybodyAnswered.push(tableService.wrightAnswersArray[0].problems[i][1]);
             }
         }
 
-        for (var i = 0; i < tableService.correlationArray.length; i++) {
+        for (var i = 1; i < tableService.correlationArray.length-1; i++) {
             var arr = tableService.correlationArray[i];
-            if (arr[arr.length - 1] <= 0) {
-                console.log(arr[0], '!с общим');
-                self.checkResult.criticalCommon.push(arr[0]);
-            } else if (arr[arr.length - 1] <= 0.3) {
-                console.log(arr[0], '?с общим');
+            if ((arr[arr.length - 1] <= 0) &&
+                self.checkResult.nobodyAnswered.indexOf(arr[0]) == -1 &&
+                self.checkResult.nobodyAnswered.indexOf(arr[0]) == -1) {
+                    self.checkResult.criticalCommon.push(arr[0]);
+            } else if ((arr[arr.length - 1] <= 0.3) &&
+                self.checkResult.nobodyAnswered.indexOf(arr[0]) == -1 &&
+                self.checkResult.nobodyAnswered.indexOf(arr[0]) == -1 &&
+                self.checkResult.criticalCommon.indexOf(arr[0]) == -1) {
                 self.checkResult.candidateCommon.push(arr[0]);
             }
         }
 
         for (i = 0; i < tableService.downCorrelationArray.length; i++) {
             arr = tableService.downCorrelationArray;
-            if (arr[i]/arr.length <= 0.3) {
-                console.log(i+1, '!с другими');
-                self.checkResult.withOthers.push(i+1);
+            var corrArr = tableService.correlationArray;
+            if ((arr[i]/arr.length <= 0.3) &&
+                self.checkResult.nobodyAnswered.indexOf(corrArr[i][0]) == -1 &&
+                self.checkResult.nobodyAnswered.indexOf(corrArr[i][0]) == -1 &&
+                self.checkResult.criticalCommon.indexOf(corrArr[i][0]) == -1) {
+                self.checkResult.withOthers.push(corrArr[i][0]);
+                if (self.checkResult.candidateCommon.indexOf(corrArr[i][0]) > -1) {
+                    self.checkResult.candidateCommon.splice(self.checkResult.candidateCommon.indexOf(corrArr[i][0]), 1);
+                }
             }
         }
 
@@ -59,10 +68,9 @@ app.service('tableCheck', function(tableService) {
                     console.log(i, j);
                 }
             }
-            if (sum >= 4) {
+            if (sum >= 3) {
                 console.log(tableService.wrightAnswersArray[i].name);
-                console.log(sum);
-                self.checkResult.guessed(tableService.wrightAnswersArray[i].name);
+                self.checkResult.guessed.push(tableService.wrightAnswersArray[i].name);
             }
         }
         console.log(self.checkResult);

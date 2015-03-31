@@ -1,11 +1,11 @@
-.well {{user.firstName}}
-.well {{user.lastName}}
+.jumbotron
+    h1 Добро пожаловать, {{user.firstName}} {{user.lastName}}.
+    p В этом разделе вам доступны все сохраненные таблицы.
 ul.list-group
-    li.list-group-item.clearfix(ng-repeat="table in userTables track by $index")
-        a(ng-href="#tables/{{table._id}}") {{table.tableName}}
-
+    li.table-list.list-group-item.clearfix(ng-repeat="table in userTables track by $index")
+        a.profile-table-link(ng-href="#tables/{{table._id}}") {{table.tableName}}
         span.pull-right
-            button.btn.btn-info.marged-right Редактировать
+            a.btn.btn-info.marged-right(ng-href="#tables/{{table._id}}", ng-click="tableService.edit = true") Редактировать
             button.btn.btn-danger.marged-right(ng-click="deleteTable(table, $index)") Удалить
             button.btn.btn-default(type="button", data-toggle="dropdown", aria-expanded="false") Сохранить как...
                 span.caret

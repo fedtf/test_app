@@ -5,18 +5,29 @@ h2.main-header(ng-hide="!createMode") Основная таблица
 //button(ng-click="removeElement(toDelete)") Удалить
 
 .for-table.panel.panel-default
-    .panel-heading Ввод результатов тестирования
-    .panel-body.
+    .panel-heading(ng-if="createMode") Ввод результатов тестирования
+    .panel-body(ng-if="createMode").
         В поля слева введите фамилии студентов. В клетках на пересечении с номерами заданий отметьте верные отвветы.
         Затем для анализа результатов нажмите на кнопку "Анализ результатов". Для сохранения
         <span ng-show='userIdentity.isAuthorised()'>- на кнопку "Сохранить"</span>
         <span ng-hide='userIdentity.isAuthorised()'>aвторизуйтесь под своим профилем</span>.
+    .panel-heading(ng-if="!createMode")
+        span(ng-show="edit") Режим редактирования результатов
+        span(ng-hide="edit") Режим просмотра
+    .panel-body(ng-if="!createMode")
+        span(ng-show="edit").
+            В режиме редактирования вы можете изменять введенные данные и повторно проводить анализ результатов.
+            Для сохранения изменений нажмите кнопку "Сохранить".
+            <span class="text-danger">В противном случае измененные данные сохранены не будут.</span>
+        span(ng-hide="edit").
+            В этом режиме вы можете просматривать сохраненные данные.
+            Для перехода в режим редактирования нажмите "Редактировать".
     .btn-group.col-xs-10.col-xs-offset-1.main-buttons
-        button.btn.btn-default(ng-click="toggleEdit()", ng-if="!createMode && !edit") Редактировать
-        button.btn.btn-default(ng-if="!createMode", ng-hide="createMode || !edit", ng-click="updateTable()") Сохранить
-        button.btn.btn-default.col-xs-6(ng-click="showSaveModal()", ng-disabled="!userIdentity.isAuthorised()") Сохранить
+        button.btn.btn-default.col-xs-6(ng-click="toggleEdit()", ng-if="!createMode && !edit") Редактировать
+        button.btn.btn-default.col-xs-6(ng-if="!createMode", ng-hide="createMode || !edit", ng-click="updateTable()") Сохранить изменения
+        button.btn.btn-default.col-xs-6(ng-click="showSaveModal()", ng-if="createMode", ng-disabled="!userIdentity.isAuthorised()") Сохранить
         //button.btn.btn-default.col-xs-6(ng-hide="userIdentity.isAuthorised() && createMode || !createMode", disabled="true") Авторизуйтесь, чтобы сохранить результат
-        button.btn.btn-default.col-xs-6(ng-click="tableCheck.check()") Анализ результатов
+        button.btn.btn-default.col-xs-6(ng-click="check()", ng-disabled="!edit") Анализ результатов
 
     .clearfix
     table.table-striped.table-bordered.table(id="main-table")
@@ -27,9 +38,11 @@ h2.main-header(ng-hide="!createMode") Основная таблица
             th(rowspan="2") Сумма<sup>2</sup>
         tr
             th(ng-repeat="elem in wrightAnswersArray[0].problems" track $index) {{elem[1]}}
+                span.glyphicon.glyphicon-remove(ng-click="removeElement(''+elem[1])")
         tr(ng-repeat="student in wrightAnswersArray track by $index")
-            td
-                input.form-control(ng-model="student.name")
+            td.name-td
+                input.form-control(ng-model="student.name", placeholder="Введите фамилию ученика")
+                span.glyphicon.glyphicon-remove(ng-click="removeElement(student.name)")
             td.check(ng-click="edit && tableService.toggleProblem(problem)", ng-repeat="problem in student.problems track by $index")
                 input(type="checkbox", ng-checked="problem[0]>0", ng-disabled="!edit")
             td(ng-init="arraySum = tableService.rightArray[$index]") {{tableService.rightArray[$index]}}
@@ -41,21 +54,21 @@ h2.main-header(ng-hide="!createMode") Основная таблица
             td Количество нерешенных
             td(ng-repeat="elem in tableService.downArray track by $index",
             ng-if="$index<tableService.downArray.length-2") {{wrightAnswersArray.length - elem}}
-            td(rowspan=3, colspan="2")  {{tableService.partSolvedSum}}
+            td(rowspan=3, colspan="2")  &Sigma;p<sub>j</sub> = {{tableService.partSolvedSum}}
         tr
-            td Доля решенных
+            td Доля решенных (p<sub>j</sub>)
             td(ng-repeat="elem in tableService.downArray track by $index",
             ng-if="$index<tableService.downArray.length-2") {{(elem/wrightAnswersArray.length).toFixed(2)}}
         tr
-            td Доля нерешенных
+            td Доля нерешенных (q<sub>j</sub>)
             td(ng-repeat="elem in tableService.downArray track by $index",
             ng-if="$index<tableService.downArray.length-2") {{(1-elem/wrightAnswersArray.length).toFixed(2)}}
         tr
-            td Дисперсия
+            td Дисперсия (p<sub>j</sub>q<sub>j</sub>)
             td(ng-repeat="elem in tableService.downArray track by $index",
             ng-if="$index<tableService.downArray.length-2").
              {{((elem/wrightAnswersArray.length)*(1-elem/wrightAnswersArray.length)).toFixed(2)}}
-            td(rowspan="2", colspan="2") {{tableService.dispersionSum}}
+            td(rowspan="2", colspan="2") &Sigma;p<sub>j</sub>q<sub>j</sub> = {{tableService.dispersionSum}}
         tr
             td Отклонение
             td(ng-repeat="elem in tableService.downArray track by $index",
@@ -84,9 +97,4 @@ h2.main-header Корреляционная таблица
             td(ng-repeat="elem in tableService.downCorrelationArray track by $index").
              {{(elem/tableService.downCorrelationArray.length*elem/tableService.downCorrelationArray.length).toFixed(4)}}
 
-.checkDiv.list-group(ng-controller="checkCtrl as ch") {{ch.val}}
-    span.glyphicon.glyphicon-circle-arrow-right(ng-click="ch.showCheckDiv()", ng-show="ch.hidden")
-    span.glyphicon.glyphicon-circle-arrow-left(ng-click="ch.hideCheckDiv()", ng-hide="ch.hidden")
-    .list-group-item(ng-if="ch.checkResult.everybodyAnswered").
-        <span ng-if="ch.checkResult.everybodyAnswered.length>1">Задания</span><span ng-repeat>
-        <span ng-if="ch.checkResult.everybodyAnswered.length == 1>Задание<span>
+.checkDiv.list-group.check-elem

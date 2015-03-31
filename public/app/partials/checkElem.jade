@@ -1,0 +1,40 @@
+h4 Итоги анализа
+span.glyphicon.glyphicon-circle-arrow-right(ng-click="ch.showCheckDiv()", ng-show="ch.hidden")
+span.glyphicon.glyphicon-circle-arrow-left(ng-click="ch.hideCheckDiv()", ng-hide="ch.hidden")
+h5.before-check(ng-show="ch.tableCheck.firstCheck") Здесь будут отображены результаты анализа
+.list-group-item(ng-show="ch.tableCheck.checkResult.everybodyAnswered.length>1").
+    Задания {{ch.tableCheck.checkResult.everybodyAnswered.join(', ')}} слишком простые,
+    на них ответили все ученики, поэтому их стоит исключить из теста.
+.list-group-item(ng-show="ch.tableCheck.checkResult.everybodyAnswered.length1==1").
+    Задание {{ch.tableCheck.checkResult.everybodyAnswered[0]}} слишком простое,
+    на него ответили все ученики, поэтому его стоит исключить из теста.
+.list-group-item(ng-show="ch.tableCheck.checkResult.nobodyAnswered.length>1").
+    Задания {{ch.tableCheck.checkResult.nobodyAnswered.join(', ')}} слишком сложные,
+    на них не ответил ни один студент, их нужно исключить.
+.list-group-item(ng-show="ch.tableCheck.checkResult.nobodyAnswered.length==1").
+    Задание {{ch.tableCheck.checkResult.nobodyAnswered[0]}} слишком сложное,
+    на него не ответил ни один студент, его нужно исключить.
+.list-group-item(ng-show="ch.tableCheck.checkResult.withOthers.length>1").
+    У заданий {{ch.tableCheck.checkResult.withOthers.join(', ')}} очень маленький коэффициент
+    корреляции с другими заданиями, поэтому они подлежат исключению или переработке.
+.list-group-item(ng-show="ch.tableCheck.checkResult.withOthers.length==1").
+    У задания {{ch.tableCheck.checkResult.withOthers[0]}} очень маленький коэффициент
+    корреляции с другими заданиями, поэтому оно подлежит исключению или переработке.
+.list-group-item(ng-show="ch.tableCheck.checkResult.criticalCommon.length>1").
+    У заданий {{ch.tableCheck.checkResult.criticalCommon.join(', ')}} коэффициент корреляции
+    с общим баллом меньше нуля, их следует исключить.
+.list-group-item(ng-show="ch.tableCheck.checkResult.criticalCommon.length==1").
+    У задания {{ch.tableCheck.checkResult.criticalCommon[0]}} коэффициент корреляции
+    с общим баллом меньше нуля, его следует исключить.
+.list-group-item(ng-show="ch.tableCheck.checkResult.candidateCommon.length>1").
+    У заданий {{ch.tableCheck.checkResult.candidateCommon.join(', ')}} коэффициент корреляции
+    с общим баллом меньше 0.3, они являются кандидатами на удаление.
+.list-group-item(ng-show="ch.tableCheck.checkResult.candidateCommon.length==1").
+    У задания {{ch.tableCheck.checkResult.candidateCommon[0]}} коэффициент корреляции
+    с общим баллом меньше 0.3, оно являются кандидатом на удаление.
+.list-group-item(ng-show="ch.tableCheck.checkResult.guessed.length>1").
+    Ученики {{ch.tableCheck.checkResult.guessed.join(', ')}} имеют нелогичные результаты,
+    возможно, их стоит исключить из расчетов.
+.list-group-item(ng-show="ch.tableCheck.checkResult.guessed.length==1").
+    Ученик {{ch.tableCheck.checkResult.guessed[0]}} имеет нелогичные результаты,
+    возможно, его стоит исключить из расчетов.

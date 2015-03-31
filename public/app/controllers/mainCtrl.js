@@ -6,16 +6,17 @@ app.controller('mainCtrl', function($scope, numbers, $upload, $location, tableSe
 
     $scope.dec = numbers.dec;
 
-    $scope.$watchCollection('numbers', function(val) {
+    $scope.$watchCollection('numbers', function() {
+        console.log($scope.numbers.problemsNumber);
+        console.log($scope.numbers.studentsNumber);
         tableService.renderArray();
     });
 
     $scope.inputClick = function(val) {
-        console.log(val, +val === 0);
         if (+val === 0) {
-            return val = '';
+            return '';
         } else {
-            return val = val;
+            return val;
         }
     };
 

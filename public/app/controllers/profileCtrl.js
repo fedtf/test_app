@@ -1,4 +1,6 @@
-app.controller('profileCtrl', function($scope, userIdentity, $http, notifier) {
+app.controller('profileCtrl', function($scope, userIdentity, $http, notifier, tableService) {
+
+    $scope.tableService = tableService;
     $scope.user = userIdentity.user;
     $http.get('/api/user-tables/' + $scope.user._id).then(function(res) {
         $scope.userTables = res.data;

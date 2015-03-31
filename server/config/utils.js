@@ -92,27 +92,189 @@ function parseCsvFile(req, res, next) {
 
 function exportDocx(req, res, next) {
 
-
-    console.log(req.params);
     var table = JSON.parse(req.params.table);
 
+    var content = fs.readFileSync('templates/template.docx', 'binary');
+    var doc = new Docxtemplater(content);
 
-        var content = fs.readFileSync('templates/template.docx', 'binary');
+    var tableXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>';
 
-        var doc = new Docxtemplater(content);
+    for (var i = 0; i < table.wrightAnswersArray[0].problems.length+3; i++) {
+        tableXml += '<w:gridCol w:w="2880"/>';
+    }
 
-        doc.setData({
-            title: table.tableName,
-            wrightAnswersArray: table.wrightAnswersArray
-        });
+    tableXml += '</w:tblGrid>';
 
-        doc.render();
+    tableXml += '<w:tr>';
+    tableXml += getCell('');
+    for (var i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
+        tableXml += getCell(table.wrightAnswersArray[0].problems[i][1]);
+    }
+    tableXml += getCell('Сумма');
+    tableXml += getCell('Сумма^2');
+    tableXml += '</w:tr>';
 
-        var buf = doc.getZip().generate({type:'nodebuffer'});
+    for (i = 0; i < table.wrightAnswersArray.length; i++) {
+        tableXml += '<w:tr>' + getCell(table.wrightAnswersArray[i].name);
+            console.log(table.wrightAnswersArray[i].name);
+        for (var j = 0; j < table.wrightAnswersArray[i].problems.length; j++) {
+            tableXml += getCell(table.wrightAnswersArray[i].problems[j][0]);
+        }
+        tableXml += getCell(table.rightArray[i]);
+        tableXml += getCell(Math.pow(table.rightArray[i], 2));
+        tableXml += '</w:tr>';
+    }
 
-        fs.writeFileSync('out.docx', buf);
+    tableXml += '<w:tr>';
+    tableXml += getCell('Количество решенных');
 
-        res.send({success:true});
+    for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
+        tableXml += getCell(table.downArray[i])
+    }
+    tableXml += getCell('');
+    tableXml += getCell('');
+    tableXml += '</w:tr>';
+
+    tableXml += '<w:tr>';
+    tableXml += getCell('Количество нерешенных');
+
+    for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
+        tableXml += getCell(table.wrightAnswersArray[0].problems.length - table.downArray[i]);
+    }
+    tableXml += getCell('');
+    tableXml += getCell('');
+    tableXml += '</w:tr>';
+
+    tableXml += '<w:tr>';
+    tableXml += getCell('Доля решенных');
+
+    for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
+        tableXml += getCell((table.downArray[i]/table.wrightAnswersArray[0].problems.length).toFixed(3));
+    }
+    tableXml += getCell('');
+    tableXml += getCell('');
+    tableXml += '</w:tr>';
+
+    tableXml += '<w:tr>';
+    tableXml += getCell('Доля нерешенных');
+
+    for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
+        tableXml += getCell((1-table.downArray[i]/table.wrightAnswersArray[0].problems.length).toFixed(3))
+    }
+    tableXml += getCell('');
+    tableXml += getCell('');
+    tableXml += '</w:tr>';
+
+    tableXml += '<w:tr>';
+    tableXml += getCell('Дисперсия');
+
+    for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
+        tableXml += getCell(((table.downArray[i]/table.wrightAnswersArray[0].problems.length)
+            *(1-table.downArray[i]/table.wrightAnswersArray[0].problems.length)).toFixed(3));
+    }
+    tableXml += getCell('');
+    tableXml += getCell('');
+    tableXml += '</w:tr>';
+
+    tableXml += '<w:tr>';
+    tableXml += getCell('Отклонение');
+
+    for (i = 0; i < table.wrightAnswersArray[0].problems.length; i++) {
+        tableXml += getCell(Math.sqrt(((table.downArray[i]/table.wrightAnswersArray[0].problems.length)
+            *(1-table.downArray[i]/table.wrightAnswersArray[0].problems.length))).toFixed(3));
+    }
+    tableXml += getCell('');
+    tableXml += getCell('');
+    tableXml += '</w:tr>';
+
+    tableXml += '</w:tbl>';
+
+
+
+    var corrXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>';
+
+    for (i = 0; i < table.correlationArray[0].length; i++) {
+        corrXml += '<w:gridCol w:w="2880"/>';
+    }
+
+    corrXml += '</w:tblGrid>';
+
+    corrXml += '<w:tr>';
+    corrXml += getCell('');
+    for (i = 0; i < table.correlationArray.length; i++) {
+        corrXml += getCell(table.correlationArray[i][0]);
+    }
+    corrXml += '</w:tr>';
+
+    for (i = 0; i < table.correlationArray.length-1; i++) {
+        corrXml += '<w:tr>';
+        for (j = 0; j < table.correlationArray[i].length; j++) {
+            corrXml += getCell(table.correlationArray[i][j])
+        }
+        corrXml += '</w:tr>';
+    }
+
+    var downCorr = [];
+
+    corrXml += '<w:tr>';
+    corrXml += getCell('Сумма');
+    for (i = 1; i < table.correlationArray.length; i++) {
+        var sum = 0;
+        for (j = 1; j < table.correlationArray[i].length-1; j++) {
+            sum += table.correlationArray[j][i];
+        }
+        sum = sum.toFixed(2);
+        downCorr.push(sum);
+        corrXml += getCell(sum);
+    }
+
+    corrXml += getCell('');
+
+    console.log(downCorr);
+
+    corrXml += '</w:tr>';
+
+    corrXml += '<w:tr>';
+    corrXml += getCell('Среднее');
+
+    for (i = 0; i < downCorr.length; i++) {
+        corrXml += getCell((downCorr[i]/table.correlationArray.length).toFixed(3));
+    }
+    corrXml += getCell('');
+    corrXml += '</w:tr>';
+
+    corrXml += '<w:tr>';
+    corrXml += getCell('Среднее^2');
+
+    for (i = 0; i < downCorr.length; i++) {
+        corrXml += getCell(Math.pow(downCorr[i]/table.correlationArray.length,2).toFixed(4));
+    }
+    corrXml += getCell('');
+    corrXml += '</w:tr>';
+    corrXml += '</w:tbl>';
+
+    doc.setData({
+        title: table.tableName,
+        xmlTable: tableXml,
+        xmlCorr: corrXml
+    });
+
+    doc.render();
+
+    var buf = doc.getZip().generate({type:'nodebuffer'});
+
+    var filePath = path.join(config.rootDirname, 'temp_export', table.tableName + '.docx');
+
+    fs.writeFileSync(filePath, buf);
+
+    res.download(filePath, table.tableName + '.docx', function(err) {
+        if (err) next(err);
+        fs.unlink(filePath);
+    });
+
+    function getCell(val) {
+        return '<w:tc><w:tcPr><w:tcW w:type="dxa"/></w:tcPr><w:p><w:r><w:t>' + val + '</w:t></w:r></w:p></w:tc>';
+    }
 }
 
 function exportXlsx(req, res, next) {
