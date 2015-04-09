@@ -39,10 +39,12 @@ app.factory('clientAuth', function($http, userIdentity, $q) {
         },
         checkAuth: function() {
             var dfd = $q.defer();
-            console.log('ehy');
+            console.log(userIdentity);
             if (userIdentity.isAuthorised()) {
+                console.log('resolved');
                 dfd.resolve();
             } else {
+                console.log('rejected');
                 dfd.reject('not authenticated');
             }
             return dfd.promise;

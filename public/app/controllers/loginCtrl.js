@@ -5,7 +5,7 @@ app.controller('loginCtrl', function($scope, $http, userIdentity, notifier, clie
     $scope.signIn = function(username, password) {
         clientAuth.logIn(username, password).then(function(success) {
             if (success) {
-                notifier.notifySuccess('Вход успешно выполнен');
+                notifier.notifySuccess('Вход выполнен');
             } else {
                 notifier.notifyError('Неверный логин или пароль');
             }
@@ -16,7 +16,7 @@ app.controller('loginCtrl', function($scope, $http, userIdentity, notifier, clie
         clientAuth.logOut().then(function() {
             $scope.username = '';
             $scope.password = '';
-            notifier.notifySuccess('Выход успешно выполнен');
+            notifier.notifySuccess('Выход выполнен');
             $location.path('/');
         })
     }

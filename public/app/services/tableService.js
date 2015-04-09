@@ -122,6 +122,8 @@ app.service('tableService', function(numbers, $rootScope) {
         console.log(self.correlationArray);
 
         self.correlationArray.sort(function(a, b) {
+            if (typeof a[0] == 'string') return true;
+            if (typeof b[0] == 'string') return false;
             return a[0] - b[0];
         });
 
@@ -130,22 +132,27 @@ app.service('tableService', function(numbers, $rootScope) {
                 var saveValue = self.correlationArray[i][j];
                 self.correlationArray[i][j] = [saveValue, self.wrightAnswersArray[0].problems[j-1][1]];
             }
-            console.log(self.correlationArray[i]);
         };
 
-        for (i = 0; i < self.correlationArray.length; i++) {
-            self.correlationArray[i].sort(function(a, b) {
-                if (!a[1]) return;
-                if (!b[1]) return;
-                return +a[1] - +b[1];
-            });
+        console.log(self.correlationArray);
+
+        for (i = 0; i < self.correlationArray.length-1; i++) {
+
+            for (var j = 2; j < self.correlationArray[i].length-1; j++) {
+                var elem = self.correlationArray[i][j];
+                var k = j-1;
+                while ((elem[1] < self.correlationArray[i][k][1]) && (k >= 1)) {
+                    self.correlationArray[i][k+1] = self.correlationArray[i][k];
+                    k -= 1;
+                }
+                self.correlationArray[i][k+1] = elem;
+
+            }
+
             for (j = 1; j < self.correlationArray[i].length-1; j++) {
                 self.correlationArray[i][j] = self.correlationArray[i][j][0];
             }
         };
-
-
-
     };
 
     self.renderDownCorrelationArray = function() {
@@ -153,16 +160,19 @@ app.service('tableService', function(numbers, $rootScope) {
         var sum = 0;
 
         for (var i = 1; i < self.correlationArray.length; i++) {
-            for (var j = 1; j < self.correlationArray[i].length-1; j++) {
+            for (var j = 0; j < self.correlationArray[i].length-2; j++) {
                 sum += self.correlationArray[j][i];
+                console.log(self.correlationArray[j][i]);
             }
+            console.log(sum);
             self.downCorrelationArray.push(+sum.toFixed(2));
+
             sum = 0;
         }
 
     };
 
-    self.removeElement = function(toDelete) {
+/*    self.removeElement = function(toDelete) {
         var toDeleteArr = toDelete.match(/((\W\d+\W)|(\w+)|(.*[\u0400-\u04FF]+.*))/g);
         for (var i = 0; i < toDeleteArr.length; i++) {
             if (isNaN(toDeleteArr[i])) {
@@ -171,9 +181,9 @@ app.service('tableService', function(numbers, $rootScope) {
                 removeProblem(toDeleteArr[i]);
             }
         }
-    };
+    };*/
 
-    function removeProblem(problem) {
+    self.removeProblem = function(problem) {
         for (var j = 0; j < self.wrightAnswersArray.length; j++) {
                 for (var k = 0; k < self.wrightAnswersArray[j].problems.length; k++) {
                     if (self.wrightAnswersArray[j].problems[k][1] == problem) {
@@ -181,17 +191,25 @@ app.service('tableService', function(numbers, $rootScope) {
                     }
                 }
             }
-    }
+    };
 
-    function removeStudent(student) {
-        for (var i = 0; i < self.wrightAnswersArray.length; i++) {
-            if (self.wrightAnswersArray[i].name.toLowerCase() == student.toLowerCase()) {
-                return self.wrightAnswersArray.splice(i, 1);
-            }
-        }
-    }
+    self.removeStudent = function(studentIndex) {
+        self.wrightAnswersArray.splice(studentIndex, 1);
+        console.log(studentIndex);
+    };
 
     self.edit = false;
+
+    self.emptyStudentsInputs = function() {
+        var empty = false;
+        for (i = 0; i < self.wrightAnswersArray.length; i++) {
+            if (!self.wrightAnswersArray[i].name.length) {
+                empty = true;
+                break;
+            }
+        }
+        return empty;
+    }
 
 });
 

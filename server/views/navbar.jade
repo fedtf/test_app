@@ -1,6 +1,8 @@
 nav.navbar.navbar-default
     .container
         .navbar-header
-            a.navbar-brand(href="#/") Анализ тестов
-        div(ng-include="'/partials/login'")
-
+            a.navbar-brand(href="#/") Анализ результатов тестирования
+        ul.nav.navbar-nav
+            li(ng-include="'/partials/about'")
+        ul.nav.navbar-nav.navbar-right
+            li(ng-include="'/partials/login'")

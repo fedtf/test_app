@@ -1,6 +1,6 @@
 .jumbotron
     h1 Добро пожаловать, {{user.firstName}} {{user.lastName}}.
-    p В этом разделе вам доступны все сохраненные таблицы.
+    p В этом разделе вам <span ng-if="!userTables.length">будут </span>доступны все сохраненные таблицы.
 ul.list-group
     li.table-list.list-group-item.clearfix(ng-repeat="table in userTables track by $index")
         a.profile-table-link(ng-href="#tables/{{table._id}}") {{table.tableName}}

@@ -17,7 +17,7 @@ app.controller('registerCtrl', function($scope, clientAuth, notifier, $location)
                 notifier.notifySuccess('Аккаунт успешно создан');
                 $location.path('/');
         }, function(reason) {
-            notifier.notifyError(reason);
+            notifier.notifyError('Произошла ошибка, попробуйте еще раз');
             console.log(reason);
         })
 

@@ -37,7 +37,7 @@ app.controller('mainCtrl', function($scope, numbers, $upload, $location, tableSe
                 tableService.wrightAnswersArray = arrayReceived;
                 console.log(tableService.wrightAnswersArray);
             }).error(function(res) {
-                notifier.notifyError(res);
+                notifier.notifyError('Что-то пошло не так, попробуйте еще раз');
             });
         }
     }

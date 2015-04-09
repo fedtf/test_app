@@ -1,6 +1,7 @@
 var app = angular.module('app', ['ngResource', 'ngRoute', 'angularModalService', 'angular-loading-bar', 'angularFileUpload']);
 
 app.config(function($routeProvider, $locationProvider) {
+
     $routeProvider
         .when('/', {
             templateUrl: '/partials/main',
@@ -16,7 +17,8 @@ app.config(function($routeProvider, $locationProvider) {
             resolve: {
                 auth: function(clientAuth) {
                     return clientAuth.checkAuth();
-                }
+                },
+                preloadUserTables: preloadUserTables
             }
         })
         .when('/register', {
@@ -34,14 +36,27 @@ app.config(function($routeProvider, $locationProvider) {
 
             }
         })
+        .otherwise({redirectTo: '/'});
 });
+
+function preloadUserTables($http, $q, userIdentity) {
+    var dfd = $q.defer();
+    if (userIdentity.user) {
+        $http.get('/api/user-tables/' + userIdentity.user._id).then(function (res) {
+            console.log(res);
+            dfd.resolve({userTables: res.data});
+        }, function (err) {
+            dfd.reject();
+            console.log(err, 'err!');
+        });
+        return dfd.promise;
+    }
+}
 
 function preloadTable($http, $q, tableService, $route) {
     var dfd = $q.defer();
-    console.log($route.current.params);
     $http.get('/api/tables/' + $route.current.params.tableId).then(function(res) {
         tableService.wrightAnswersArray = res.data.wrightAnswersArray;
-        console.log(tableService.wrightAnswersArray);
         dfd.resolve({name: res.data.tableName});
     }, function(reason) {
         dfd.reject('table error');
@@ -51,10 +66,11 @@ function preloadTable($http, $q, tableService, $route) {
 
 app.run(function($rootScope, $location, notifier) {
     $rootScope.$on('$routeChangeError', function(evt, current, previous, rejection) {
-        if (rejection === 'not authenticated') {
+        if (rejection == 'not authenticated') {
             $location.path('/');
-        } else if (rejection === 'table error') {
-            notifier.notifyError('Что-то пошло не так, попробуйте позже');
+        } else {
+            notifier.notifyError('Что-то пошло не так, попробуйте еще раз');
+            console.log(rejection);
         }
     })
 });

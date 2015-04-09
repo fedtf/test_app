@@ -1,7 +1,7 @@
 doctype html
 html
     head
-        title Test Analysis
+        title Анализ результатов тестирования
         link(rel="stylesheet", type="text/css", href="/vendor/bootstrap/dist/css/bootstrap.min.css")
         link(rel="stylesheet", type="text/css", href="/css/style.css")
         link(rel="stylesheet", type="text/css", href="/css/fontello/css/fontello.css")
@@ -10,5 +10,10 @@ html
         include scripts
         include bootstrapUser
     body(ng-app="app")
-        include navbar
-        block main-content
+        .wrapper
+            include navbar
+            block main-content
+            .push
+        .footer
+            .container
+                i.pull-right made by f

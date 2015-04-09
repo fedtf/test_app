@@ -6,7 +6,6 @@ var Docxtemplater = require('docxtemplater');
 var config = require('./config');
 var path = require('path');
 var xlsx = require('node-xlsx');
-var xlsxTemplate = require('xlsx-template');
 
 exports.parseFile = function(req, res, next) {
     console.log(req.files.file.mimetype);
@@ -92,7 +91,16 @@ function exportDocx(req, res, next) {
     var content = fs.readFileSync('templates/template.docx', 'binary');
     var doc = new Docxtemplater(content);
 
-    var tableXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>';
+    var tableXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/>' +
+        '<w:tblBorders>' +
+        '<w:top w:val="single" w:sz="12" w:space="0" w:color="000000" />' +
+        '<w:start w:val="single" w:sz="24" w:space="0" w:color="000000" />' +
+        '<w:bottom w:val="single" w:sz="12" w:space="0" w:color="000000" />' +
+        '<w:end w:val="single" w:sz="24" w:space="0" w:color="000000" />' +
+        '<w:insideH w:val="single" w:sz="24" w:space="0" w:color="000000" />' +
+        '<w:insideV w:val="single" w:sz="24" w:space="0" w:color="000000" />' +
+        '</w:tblBorders>' +
+        '</w:tblPr><w:tblGrid>';
 
     for (var i = 0; i < table.wrightAnswersArray[0].problems.length+3; i++) {
         tableXml += '<w:gridCol w:w="2880"/>';
@@ -184,8 +192,6 @@ function exportDocx(req, res, next) {
 
     tableXml += '</w:tbl>';
 
-
-
     var corrXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/></w:tblPr><w:tblGrid>';
 
     for (i = 0; i < table.correlationArray[0].length; i++) {
@@ -209,23 +215,16 @@ function exportDocx(req, res, next) {
         corrXml += '</w:tr>';
     }
 
-    var downCorr = [];
-
     corrXml += '<w:tr>';
     corrXml += getCell('Сумма');
-    for (i = 1; i < table.correlationArray.length; i++) {
-        var sum = 0;
-        for (j = 1; j < table.correlationArray[i].length-1; j++) {
-            sum += table.correlationArray[j][i];
-        }
-        sum = sum.toFixed(2);
-        downCorr.push(sum);
-        corrXml += getCell(sum);
+
+    var downCorr = getDownCorrelationArray(table.correlationArray);
+
+    for (i = 0; i < downCorr.length; i++) {
+        corrXml += getCell(downCorr[i]);
     }
 
     corrXml += getCell('');
-
-    console.log(downCorr);
 
     corrXml += '</w:tr>';
 
@@ -274,46 +273,9 @@ function exportDocx(req, res, next) {
 
 function exportXlsx(req, res, next) {
 
-    console.log(req.params.table);
-
     var table = JSON.parse(req.params.table);
 
-    var XlsxTemplate = require('xlsx-template');
-
-    // Load an XLSX file into memory
-    fs.readFile(path.join(config.rootDirname, 'templates', '1.xlsx'), function(err, data) {
-
-        // Create a template
-        var template = new XlsxTemplate(data);
-
-        // Replacements take place on first sheet
-        var sheetNumber = 1;
-
-        // Set up some placeholder values matching the placeholders in the template
-        var values = {
-                extractDate: new Date(),
-                dates: new Date("2013-06-01"),
-                people: [
-                    {name: "John Smith", age: 20},
-                    {name: "Bob Johnson", age: 22}
-                ]
-            };
-
-        // Perform substitution
-        template.substitute(sheetNumber, values);
-
-        // Get binary data
-        var data = template.generate();
-
-        fs.writeFileSync('out.xlsx', data);
-
-        res.download('out.xlsx'); 
-
-        // ...
-
-    });
-
-        /*var xlsx = officegen('xlsx'),
+        var xlsx = officegen('xlsx'),
         currentRow = 0,
         currentCol = 1;
 
@@ -345,8 +307,10 @@ function exportXlsx(req, res, next) {
                 sheet.data[currentRow][currentCol] = problems[j][0];
                 currentCol++;
             }
-            sheet.data[currentRow][currentCol] = '=СУММ(' + getCellByIndex(1, currentRow) + ':'+ getCellByIndex(currentCol-1, currentRow) + ')';
-            sheet.data[currentRow][currentCol+1] = '=СУММ(' + getCellByIndex(1, currentRow) + ':'+ getCellByIndex(currentCol-1, currentRow) + ')^2';
+            //sheet.data[currentRow][currentCol] = '=СУММ(' + getCellByIndex(1, currentRow) + ':'+ getCellByIndex(currentCol-1, currentRow) + ')';
+            //sheet.data[currentRow][currentCol+1] = '=СУММ(' + getCellByIndex(1, currentRow) + ':'+ getCellByIndex(currentCol-1, currentRow) + ')^2';
+            sheet.data[currentRow][currentCol] = table.rightArray[i];
+            sheet.data[currentRow][currentCol+1] = Math.pow(table.rightArray[i], 2);
             currentRow++;
         }
 
@@ -364,14 +328,23 @@ function exportXlsx(req, res, next) {
         sheet.data[currentRow+5] = [];
         sheet.data[currentRow+5][0] = 'Отклонение';
         for (i = 1; i < table.wrightAnswersArray[0].problems.length+1; i++) {
-            var interval = getCellByIndex(i, 1) + ':' + getCellByIndex(i, currentRow-1);
+            //var interval = getCellByIndex(i, 1) + ':' + getCellByIndex(i, currentRow-1);
 
-            sheet.data[currentRow][i] = '=СУММ(' + interval +')';
+            /*sheet.data[currentRow][i] = '=СУММ(' + interval +')';
             sheet.data[currentRow+1][i] = '=СЧЕТ(' + interval + ')-СУММ(' + interval +')';
             sheet.data[currentRow+2][i] = '=СУММ(' + interval +')/СЧЕТ(' + interval + ')';
             sheet.data[currentRow+3][i] = '=1-СУММ(' + interval +')/СЧЕТ(' + interval + ')';
             sheet.data[currentRow+4][i] = '=(1-СУММ(' + interval +')/СЧЕТ(' + interval + '))*СУММ(' + interval +')/СЧЕТ(' + interval + ')';
-            sheet.data[currentRow+5][i] = '=КОРЕНЬ((1-СУММ(' + interval +')/СЧЕТ(' + interval + '))*(СУММ(' + interval +')/СЧЕТ(' + interval + ')))';
+            sheet.data[currentRow+5][i] = '=КОРЕНЬ((1-СУММ(' + interval +')/СЧЕТ(' + interval + '))*(СУММ(' + interval +')/СЧЕТ(' + interval + ')))';*/
+            var val = table.downArray[i-1];
+            sheet.data[currentRow][i] = val;
+            sheet.data[currentRow+1][i] = table.wrightAnswersArray.length - val;
+            sheet.data[currentRow+2][i] = (val/table.wrightAnswersArray.length).toFixed(3);
+            sheet.data[currentRow+3][i] = (1 - val/table.wrightAnswersArray.length).toFixed(3);
+            sheet.data[currentRow+4][i] = ((1 - val/table.wrightAnswersArray.length)*
+                (val/table.wrightAnswersArray.length)).toFixed(3);
+            sheet.data[currentRow+5][i] = Math.sqrt((1 - val/table.wrightAnswersArray.length)*
+                (val/table.wrightAnswersArray.length)).toFixed(4);
         }
 
         currentRow += 8;
@@ -405,11 +378,19 @@ function exportXlsx(req, res, next) {
         sheet.data[currentRow+2][0] = 'Среднее^2';
         currentCol = 1;
 
+        var downCorr = getDownCorrelationArray(table.correlationArray);
+
+        console.log(downCorr);
+
         for (i = 0; i < table.correlationArray.length-1; i++) {
-            interval = getCellByIndex(currentCol, correlationBegin) + ':' + getCellByIndex(currentCol, currentRow-1)
+            /*interval = getCellByIndex(currentCol, correlationBegin) + ':' + getCellByIndex(currentCol, currentRow-1)
             sheet.data[currentRow][currentCol] = '=СУММ(' + interval + ')';
             var average = sheet.data[currentRow+1][currentCol] = '=СУММ(' + interval + ')/СЧЕТ(' + interval + ')';
-            sheet.data[currentRow+2][currentCol] = average + '^2';
+            sheet.data[currentRow+2][currentCol] = average + '^2';*/
+
+            sheet.data[currentRow][currentCol] = downCorr[i];
+            var average = sheet.data[currentRow+1][currentCol] = (downCorr[i]/table.correlationArray.length).toFixed(3);
+            sheet.data[currentRow+2][currentCol] = Math.pow(downCorr[i]/table.correlationArray.length, 2).toFixed(4);
             currentCol++;
         }
 
@@ -443,8 +424,22 @@ function exportXlsx(req, res, next) {
         cell += +row + 1;
 
         return cell;
-    }*/
+    }
 
 
 
+}
+
+function getDownCorrelationArray(correlationArray) {
+    var downCorr = [];
+    for (i = 1; i < correlationArray.length; i++) {
+        var sum = 0;
+        for (j = 0; j < correlationArray[i].length-2; j++) {
+            sum += correlationArray[j][i];
+        }
+        sum = sum.toFixed(2);
+        console.log(sum);
+        downCorr.push(sum);
+    }
+    return downCorr;
 }

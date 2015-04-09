@@ -2,11 +2,14 @@ app.controller('profileCtrl', function($scope, userIdentity, $http, notifier, ta
 
     $scope.tableService = tableService;
     $scope.user = userIdentity.user;
-    $http.get('/api/user-tables/' + $scope.user._id).then(function(res) {
-        $scope.userTables = res.data;
-        console.log($scope.userTables);
 
+    $scope.$on('$routeChangeSuccess', function(next, current) {
+        console.log(current);
+        if (current.locals.preloadUserTables.userTables) {
+            $scope.userTables = current.locals.preloadUserTables.userTables;
+        }
     });
+
     $scope.exportTable = function(table, type) {
         $('body').append($("<iframe src='/export/" + JSON.stringify(table) + "/" + type + "' style='display:none'>"));
     };

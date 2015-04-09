@@ -1,4 +1,4 @@
-app.controller('createTableCtrl', function($scope, numbers, tableService, ModalService, userIdentity, $routeParams, tableCheck) {
+app.controller('createTableCtrl', function($scope, notifier, numbers, tableService, ModalService, userIdentity, $routeParams, tableCheck) {
     $scope.numbers = numbers;
 
     $scope.numbers.studentsNumber = +$routeParams.studentsNumber;
@@ -15,12 +15,22 @@ app.controller('createTableCtrl', function($scope, numbers, tableService, ModalS
 
     $scope.tableCheck = tableCheck;
 
+    $scope.$on('$destroy', function() {
+        tableCheck.checkResult = {};
+        tableCheck.firstCheck = true;
+    });
+
     $scope.check = function() {
+        if (tableService.emptyStudentsInputs()) {
+            notifier.notifyError('Пожалуйста, введите фамилии всех учеников');
+            return false;
+        }
         tableCheck.check();
         $scope.ch.showCheckDiv();
     };
 
-    $scope.removeElement = tableService.removeElement;
+    $scope.removeStudent = tableService.removeStudent;
+    $scope.removeProblem = tableService.removeProblem;
 
     if (!tableService.wrightAnswersArray.length) {
         tableService.renderArray();
@@ -34,6 +44,10 @@ app.controller('createTableCtrl', function($scope, numbers, tableService, ModalS
     }, true);
 
     $scope.showSaveModal = function() {
+        if (tableService.emptyStudentsInputs()) {
+            notifier.notifyError('Пожалуйста, введите фамилии всех учеников');
+            return false;
+        };
         ModalService.showModal({
             templateUrl: '/partials/saveModal',
             controller: 'saveTableCtrl'

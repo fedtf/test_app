@@ -1,5 +1,5 @@
 h2.main-header(ng-show="!createMode") {{tableName}}
-h2.main-header(ng-hide="!createMode") Основная таблица
+h3.table-header Основная таблица
 
 //input.form-control.input-lg(type="text", ng-model="toDelete", ng-disabled="!createMode && !edit")
 //button(ng-click="removeElement(toDelete)") Удалить
@@ -30,53 +30,54 @@ h2.main-header(ng-hide="!createMode") Основная таблица
         button.btn.btn-default.col-xs-6(ng-click="check()", ng-disabled="!edit") Анализ результатов
 
     .clearfix
-    table.table-striped.table-bordered.table(id="main-table")
-        tr
-            th(rowspan="2") Испытуемые
-            th(colspan="{{wrightAnswersArray[0].problems.length}}") Задания
-            th(rowspan="2") Сумма
-            th(rowspan="2") Сумма<sup>2</sup>
-        tr
-            th(ng-repeat="elem in wrightAnswersArray[0].problems" track $index) {{elem[1]}}
-                span.glyphicon.glyphicon-remove(ng-click="removeElement(''+elem[1])")
-        tr(ng-repeat="student in wrightAnswersArray track by $index")
-            td.name-td
-                input.form-control(ng-model="student.name", placeholder="Введите фамилию ученика")
-                span.glyphicon.glyphicon-remove(ng-click="removeElement(student.name)")
-            td.check(ng-click="edit && tableService.toggleProblem(problem)", ng-repeat="problem in student.problems track by $index")
-                input(type="checkbox", ng-checked="problem[0]>0", ng-disabled="!edit")
-            td(ng-init="arraySum = tableService.rightArray[$index]") {{tableService.rightArray[$index]}}
-            td {{tableService.rightArray[$index]*tableService.rightArray[$index]}}
-        tr
-            td Количество решенных
-            td(ng-repeat="elem in tableService.downArray track by $index") {{elem}}
-        tr
-            td Количество нерешенных
-            td(ng-repeat="elem in tableService.downArray track by $index",
-            ng-if="$index<tableService.downArray.length-2") {{wrightAnswersArray.length - elem}}
-            td(rowspan=3, colspan="2")  &Sigma;p<sub>j</sub> = {{tableService.partSolvedSum}}
-        tr
-            td Доля решенных (p<sub>j</sub>)
-            td(ng-repeat="elem in tableService.downArray track by $index",
-            ng-if="$index<tableService.downArray.length-2") {{(elem/wrightAnswersArray.length).toFixed(2)}}
-        tr
-            td Доля нерешенных (q<sub>j</sub>)
-            td(ng-repeat="elem in tableService.downArray track by $index",
-            ng-if="$index<tableService.downArray.length-2") {{(1-elem/wrightAnswersArray.length).toFixed(2)}}
-        tr
-            td Дисперсия (p<sub>j</sub>q<sub>j</sub>)
-            td(ng-repeat="elem in tableService.downArray track by $index",
-            ng-if="$index<tableService.downArray.length-2").
-             {{((elem/wrightAnswersArray.length)*(1-elem/wrightAnswersArray.length)).toFixed(2)}}
-            td(rowspan="2", colspan="2") &Sigma;p<sub>j</sub>q<sub>j</sub> = {{tableService.dispersionSum}}
-        tr
-            td Отклонение
-            td(ng-repeat="elem in tableService.downArray track by $index",
-            ng-if="$index<tableService.downArray.length-2").
-             {{(tableService.sqrt((elem/wrightAnswersArray.length)*(1-elem/wrightAnswersArray.length))).toFixed(2)}}
+    .table-responsive
+        table.table-striped.table-bordered.table(id="main-table")
+            tr
+                th(rowspan="2") Испытуемые
+                th(colspan="{{wrightAnswersArray[0].problems.length}}") Задания
+                th(rowspan="2") Сумма
+                th(rowspan="2") Сумма<sup>2</sup>
+            tr
+                th(ng-repeat="elem in wrightAnswersArray[0].problems" track $index) {{elem[1]}}
+                    span.glyphicon.glyphicon-remove(ng-click="(createMode || edit) && removeProblem(elem[1])")
+            tr(ng-repeat="student in wrightAnswersArray track by $index")
+                td(width="40%").name-td
+                    input.form-control(ng-model="student.name", ng-attr-tabindex="{student.index}", placeholder="Введите фамилию ученика")
+                    span.glyphicon.glyphicon-remove(ng-click="(createMode || edit) && removeStudent($index)")
+                td.check(ng-click="edit && tableService.toggleProblem(problem)", ng-repeat="problem in student.problems track by $index")
+                    input(type="checkbox", ng-checked="problem[0]>0", ng-disabled="!edit")
+                td(ng-init="arraySum = tableService.rightArray[$index]") {{tableService.rightArray[$index]}}
+                td {{tableService.rightArray[$index]*tableService.rightArray[$index]}}
+            tr
+                td Количество решенных
+                td(ng-repeat="elem in tableService.downArray track by $index") {{elem}}
+            tr
+                td Количество нерешенных
+                td(ng-repeat="elem in tableService.downArray track by $index",
+                ng-if="$index<tableService.downArray.length-2") {{wrightAnswersArray.length - elem}}
+                td(rowspan=3, colspan="2")  &Sigma;p<sub>j</sub> = {{tableService.partSolvedSum}}
+            tr
+                td Доля решенных (p<sub>j</sub>)
+                td(ng-repeat="elem in tableService.downArray track by $index",
+                ng-if="$index<tableService.downArray.length-2") {{(elem/wrightAnswersArray.length).toFixed(2)}}
+            tr
+                td Доля нерешенных (q<sub>j</sub>)
+                td(ng-repeat="elem in tableService.downArray track by $index",
+                ng-if="$index<tableService.downArray.length-2") {{(1-elem/wrightAnswersArray.length).toFixed(2)}}
+            tr
+                td Дисперсия (p<sub>j</sub>q<sub>j</sub>)
+                td(ng-repeat="elem in tableService.downArray track by $index",
+                ng-if="$index<tableService.downArray.length-2").
+                 {{((elem/wrightAnswersArray.length)*(1-elem/wrightAnswersArray.length)).toFixed(2)}}
+                td(rowspan="2", colspan="2") &Sigma;p<sub>j</sub>q<sub>j</sub> = {{tableService.dispersionSum}}
+            tr
+                td Отклонение
+                td(ng-repeat="elem in tableService.downArray track by $index",
+                ng-if="$index<tableService.downArray.length-2").
+                 {{(tableService.sqrt((elem/wrightAnswersArray.length)*(1-elem/wrightAnswersArray.length))).toFixed(2)}}
 
-h2.main-header Корреляционная таблица
-.for-correlation-table
+h3.table-header Корреляционная таблица
+.for-correlation-table.table-responsive
     table.table.table-striped.table-bordered(id="correlation-table")
         tr
             th №
@@ -91,10 +92,10 @@ h2.main-header Корреляционная таблица
         tr
             th Среднее
             td(ng-repeat="elem in tableService.downCorrelationArray track by $index").
-             {{(elem/tableService.downCorrelationArray.length).toFixed(3)}}
+             {{(elem/tableService.correlationArray.length).toFixed(3)}}
         tr
             th Среднее<sup>2</sup>
             td(ng-repeat="elem in tableService.downCorrelationArray track by $index").
-             {{(elem/tableService.downCorrelationArray.length*elem/tableService.downCorrelationArray.length).toFixed(4)}}
+             {{(elem/tableService.correlationArray.length*elem/tableService.correlationArray.length).toFixed(4)}}
 
 .checkDiv.list-group.check-elem

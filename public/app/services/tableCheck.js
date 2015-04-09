@@ -1,4 +1,4 @@
-app.service('tableCheck', function(tableService) {
+app.service('tableCheck', function(tableService, notifier) {
 
     var self = this;
 
@@ -6,7 +6,11 @@ app.service('tableCheck', function(tableService) {
 
     self.checkResult = {};
 
+    self.everythingFine = false;
+
     self.check = function() {
+
+        self.everythingFine = true;
 
         self.firstCheck = false;
 
@@ -22,10 +26,12 @@ app.service('tableCheck', function(tableService) {
         for (i = 0; i < tableService.downArray.length-2; i++) {
             if (tableService.downArray[i] == 0) {
                 self.checkResult.nobodyAnswered.push(tableService.wrightAnswersArray[0].problems[i][1]);
+                self.everythingFine = false;
             }
             if (tableService.downArray[i] == tableService.wrightAnswersArray.length) {
                 console.log(tableService.wrightAnswersArray[0], i);
                 self.checkResult.everybodyAnswered.push(tableService.wrightAnswersArray[0].problems[i][1]);
+                self.everythingFine = false;
             }
         }
 
@@ -35,11 +41,13 @@ app.service('tableCheck', function(tableService) {
                 self.checkResult.nobodyAnswered.indexOf(arr[0]) == -1 &&
                 self.checkResult.nobodyAnswered.indexOf(arr[0]) == -1) {
                     self.checkResult.criticalCommon.push(arr[0]);
+                    self.everythingFine = false;
             } else if ((arr[arr.length - 1] <= 0.3) &&
                 self.checkResult.nobodyAnswered.indexOf(arr[0]) == -1 &&
                 self.checkResult.nobodyAnswered.indexOf(arr[0]) == -1 &&
                 self.checkResult.criticalCommon.indexOf(arr[0]) == -1) {
                 self.checkResult.candidateCommon.push(arr[0]);
+                self.everythingFine = false;
             }
         }
 
@@ -51,6 +59,7 @@ app.service('tableCheck', function(tableService) {
                 self.checkResult.nobodyAnswered.indexOf(corrArr[i][0]) == -1 &&
                 self.checkResult.criticalCommon.indexOf(corrArr[i][0]) == -1) {
                 self.checkResult.withOthers.push(corrArr[i][0]);
+                self.everythingFine = false;
                 if (self.checkResult.candidateCommon.indexOf(corrArr[i][0]) > -1) {
                     self.checkResult.candidateCommon.splice(self.checkResult.candidateCommon.indexOf(corrArr[i][0]), 1);
                 }
@@ -65,15 +74,15 @@ app.service('tableCheck', function(tableService) {
                 if (((j < i) && tableService.wrightAnswersArray[i].problems[j][0] == 0) ||
                     ((j > i) && tableService.wrightAnswersArray[i].problems[j][0] == 1)) {
                     sum++;
-                    console.log(i, j);
                 }
             }
             if (sum >= 3) {
                 console.log(tableService.wrightAnswersArray[i].name);
                 self.checkResult.guessed.push(tableService.wrightAnswersArray[i].name);
+                self.everythingFine = false;
             }
         }
-        console.log(self.checkResult);
+        console.log(self.checkResult, self.everythingFine);
     };
 
     function sortTables() {

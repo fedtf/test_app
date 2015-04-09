@@ -2,14 +2,41 @@
   font-family:infinity;
   src: url('fonts/Infinity_Russian_edition.woff');
 }
-*
+/**
   &::selection
     background-color transparent
-    color #000
+    color #000*/
+
+html
+body
+  height 100%
+
+a
+  cursor pointer
+
+.footer
+  color #666;
+  background #F8F8F8;
+  padding 17px 0 18px 0;
+  border-top 1px solid #E7E7E7;
+.wrapper
+     min-height 100%;
+     height auto !important;
+     height 100%;
+     margin 0 auto -63px;
+.push
+  height 63px
+
 .marged-right
   margin-right 20px
 .marged-top
   margin-top 60px
+.padded-top
+  padding-top 10px
+
+.navbar-header
+  border-right 1px dashed #777
+
 .page-header
   margin-top 0
 .main-header
@@ -46,6 +73,17 @@
   bottom 30px
 .user-link
   text-decoration:underline
+
+.for-table
+.for-correlation-table
+  margin-bottom 50px
+
+.table-header
+  text-align center
+  font-size 255%
+  font-family:infinity
+  font-weight:bold
+  margin-bottom 40px
 table
   &#main-table
   &#correlation-table
@@ -96,6 +134,7 @@ table
   box-shadow 0 0 10px
   text-align center
   border-top-right-radius 3px
+  z-index 666
   span.glyphicon
     position absolute
     top 5px
@@ -117,7 +156,11 @@ table
   font-size 19px
   position absolute
   top 40%
-.modal-content
+.everything-fine
+  font-size 19px
+  position absolute
+  top 40%
+.save-modal-content
   box-shadow none
   background none
   border none
@@ -125,3 +168,22 @@ table
   top 80%
   a
     cursor pointer
+
+.about-header
+  margin-top 0
+  margin-bottom 0
+  text-align center
+.about-list
+  li
+    padding-top 10px
+    padding-bottom 10px
+    &:first-child
+      padding-top 0
+    &:last-child
+      padding-bottom 0
+.about-check-list
+  padding-top 10px
+
+.alert-about
+  margin-top 15px
+  margin-bottom 5px

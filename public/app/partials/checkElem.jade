@@ -2,6 +2,7 @@ h4 Итоги анализа
 span.glyphicon.glyphicon-circle-arrow-right(ng-click="ch.showCheckDiv()", ng-show="ch.hidden")
 span.glyphicon.glyphicon-circle-arrow-left(ng-click="ch.hideCheckDiv()", ng-hide="ch.hidden")
 h5.before-check(ng-show="ch.tableCheck.firstCheck") Здесь будут отображены результаты анализа
+h5.everything-fine(ng-show="ch.tableCheck.everythingFine") Поздравляем! Ваш тест в полном порядке
 .list-group-item(ng-show="ch.tableCheck.checkResult.everybodyAnswered.length>1").
     Задания {{ch.tableCheck.checkResult.everybodyAnswered.join(', ')}} слишком простые,
     на них ответили все ученики, поэтому их стоит исключить из теста.
